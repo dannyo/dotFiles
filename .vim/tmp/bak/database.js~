@@ -1,0 +1,21 @@
+// config/database.js
+module.exports = {
+
+    //'url' : process.env.MONGOLAB_URI || 'mongodb://localhost:27017/financeDb' // looks like mongodb://<user>:<pass>@mongo.onmodulus.net:27017/Mikha4ot
+    //'url' : 'mongodb://localhost:27017/financeDb' // looks like mongodb://<user>:<pass>@mongo.onmodulus.net:27017/Mikha4ot
+    //'url' : 'mongodb://heroku_app2712853' looks like mongodb://<user>:<pass>@mongo.onmodulus.net:27017/Mikha4ot
+    //
+    dev: {
+        url: 'mongodb://localhost:27017/financeDb',
+        collectionName: 'financeDb',
+        host: 'localhost',
+        port: '27017'
+        
+    },
+    prod: {
+        url:  process.env.MONGOLAB_URI,
+        collectionName: 'heroku_app2712853',
+        host: 'ds041178.mongolab.com',
+        port: '41178'
+    }
+};

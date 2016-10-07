@@ -1,0 +1,58 @@
+{
+    "autoload": {
+        "psr-0": {
+            "Tradesy": "../tradesy-common/src/",
+            "Flag": "../tradesy-fraud/src/",
+            "Signifyd": "../tradesy-fraud/src/",
+            "TradesyFraud": "../tradesy-fraud/src/",
+            "TradesyData": "../tradesy-data-tracking/src/",
+            "TradesyDataElasticSearch": "../tradesy-data-tracking/src/",
+            "TradesyDataWorker": "../tradesy-data-tracking/src/",
+            "TradesyDataLegacyLogTranslator": "../tradesy-data-tracking/src/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/RecycledMedia/tradesy-common"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/nartmal/fresque"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/nartmal/sailthru-php5-client"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/RecycledMedia/Elastica"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/nartmal/php-resque-ex"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/nartmal/sendgrid-php"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/serbanghita/Mobile-Detect"
+        }
+    ],
+    "require": {
+        "nartmal/sailthru-php5-client": "dev-master",
+        "nartmal/sendgrid": "dev-master",
+        "aws/aws-sdk-php": "2.*",
+        "nartmal/php-resque-ex": "dev-tradesy_stable",
+        "smottt/wideimage": "dev-master",
+        "tradesy/Elastica": "1.0.1.5",
+        "mtdowling/cron-expression": "1.0.*",
+        "balanced/balanced": "1.2.*",
+        "stripe/stripe-php": "2.*",
+        "phpmailer/phpmailer": "dev-master",
+        "mobiledetect/mobiledetectlib" : "dev-master"
+        "yiisoft/yii": "1.1.*"
+    }
+}

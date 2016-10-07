@@ -1,0 +1,25 @@
+
+#   COUCHBASE vars
+#   ------------------------------------------------------------
+export COUCHBASE_BIN='/Applications/Couchbase Server.app/Contents/Resources/couchbase-core/bin'
+export COUCHBASE_CLUSTER=8091
+export COUCHBASE_USER=Administrator
+export COUCHBASE_PASSWORD=password
+
+#   per-env-couchbase-es-xdcr-setup.sh script
+#   ------------------------------------------------------------
+export LOCAL_COUCHBASE_CLUSTER=localhost:8091
+export LOCAL_COUCHBASE_USER=Administrator
+export LOCAL_COUCHBASE_PASSWORD=password
+export LOCAL_ELASTICSEARCH_CLUSTER=localhost:9200
+export LOCAL_ELASTICSEARCH_XDCR=localhost:9091
+
+#   JAVA versions
+#   ------------------------------------------------------------
+#export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+
+# RBMH build vars
+# ------------------------------------------------------------
+export NEXUS_USER='downloader'
+export NEXUS_PASSWORD='JQR!C7SFrh'

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" ng-app="myModule">
+    <head>
+        <meta charset="utf-8">
+        <title>Todo List</title>
+        <link rel="stylesheet" href="css/app.css">
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <script src="lib/angular/angular.js"></script>
+        <script src="js/controllers.js"></script>
+        <script src="lib/moment.min.js"></script>
+    </head>
+    <body>
+        <div ng-controller="TodoListController">
+            <h2>My TODOs</h2>
+            <div class="span2">
+                <div> 
+                    Add todo: <input ng-model="newTodo"></input> 
+                    <button data-ng-click="add(newTodo, getDate())">+</button>
+                </div>
+                <ul>
+                    <li ng-repeat='todo in todos | date'>
+                    <span data-ng-bind="todo.todo"></span>
+                    <span data-
+                        <button data-ng-click="remove(todo)">-</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script>
+
+        var TodoListController = function ($scope){
+            $scope.todos = [('something', new Date().getTime())];
+            $scope.add = function (todoValue, date){
+                $scope.todos.push(todoValue,date);
+            }
+            $scope.remove = function (todo){
+                $scope.todos.splice($scope.todos.indexOf(todo),1);
+            }
+        }
+        TodoListController.$inject = ['$scope'];
+
+        angular.module('myModule',[]).filter('date', function(date){
+            return moment(date).fromNow();
+        }
+
+    </script>
+</html>

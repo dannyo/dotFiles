@@ -1,0 +1,179 @@
+snippet main
+	public static void main (String [] args) {
+		${1:/* code */}
+	}
+snippet pu
+	public
+snippet po
+	protected
+snippet pr
+	private
+snippet st
+	static
+snippet fi
+	final
+snippet ab
+	abstract
+snippet re
+	return
+snippet br
+	break;
+snippet de
+	default:
+		${1}
+snippet ca
+	catch(${1:Exception} ${2:e}) ${3}
+snippet th
+	throw 
+snippet sy
+	synchronized
+snippet im
+	import
+snippet imp
+	implements
+snippet ext
+	extends 
+snippet j.u.
+	java.util
+snippet ju
+	java.util.*;
+snippet j.i
+	java.io.
+snippet ji
+	java.io.*;
+snippet j.b
+	java.beans.
+snippet j.n
+	java.net.
+snippet j.m
+	java.math.
+snippet if
+	if (${1}) {
+		${2:/* code */}
+	}
+snippet ifl
+	if (${1}) { ${2:}; }${3}
+snippet el
+	else {
+		${1:/* code */}
+	}
+snippet ell
+	else { ${1:} }${2}
+snippet elif
+	else if (${1}) {
+		${2:/* code */}
+	}
+snippet wh
+	while (${1}) {
+		${2:/* code */}
+	}
+snippet for
+	for (int i = ${1:0}; i ${2:<} ${3:array}.length; ${4:i++}) {
+		${5:/* code */}
+	}
+snippet forj
+	for (int j = ${1:0}; j ${2:<} ${3:array}.length; ${4:j++}) {
+		${5:/* code */}
+	}
+snippet fork
+	for (int k = ${1:0}; k ${2:<} ${3:array}.length; ${4:k++}) {
+		${5:/* code */}
+	}
+snippet forv
+	for (int i = ${1:0}; i ${2:<} ${3:value}; ${4:i++}) {
+		${5:/* code */}
+	}
+snippet forvj
+	for (int j = ${1:0}; j ${2:<} ${3:value}; ${4:j++}) {
+		${5:/* code */}
+	}
+snippet forvk
+	for (int k = ${1:0}; k ${2:<} ${3:value}; ${4:k++}) {
+		${5:/* code */}
+	}
+snippet fore
+	for (${1} : ${2}) {
+		${3:/* code */}
+	}
+snippet sw
+	switch (${1}) {
+		${2}
+	}
+snippet cs
+	case ${1}:
+		${2}
+	${3}
+snippet csb
+	case ${1}:
+		${2}
+		break;
+snippet tc
+	public class ${1:`Filename()`} {
+		${2:/* code */}
+	}
+snippet it
+	import junit.framework.*;
+	import static org.junit.Assert.*;
+	import org.junit.Test;
+snippet t
+	@Test 
+	public void ${1:Name}() {
+		${2:/* code */}
+	}
+snippet cl
+	class ${1:`Filename("", "untitled")`} {
+		${2:/* code */}
+	}
+snippet cle
+	class ${1:`Filename("", "untitled")`} ${2:extends Parent} {
+		${3:/* code */}
+	}
+snippet in
+	interface ${1:`Filename("", "untitled")`} ${2:extends Parent}${3}
+snippet m
+	${1:void} ${2:method}(${3}) {
+		${4:/* code */}
+	}
+snippet mt
+	${1:void} ${2:method}(${3}) ${4:throws }${5}
+snippet v
+	${1:String} ${2:var}${3: = null}${4};${5}
+snippet pv
+	public ${1:String} ${2:var}${3};${4}
+snippet pfv
+	public final ${1:String} ${2:var}${3};${4}
+snippet co
+	static public final ${1:String} ${2:var} = ${3};${4}
+snippet cos
+	static public final String ${1:var} = "${2}";${3}
+snippet as
+	assert ${1:test} : "${2:Failure message}";${3}
+snippet try
+	try {
+		${3}
+	} catch(${1:Exception} ${2:e}) {
+	}
+snippet tryf
+	try {
+		${3}
+	} catch(${1:Exception} ${2:e}) {
+	} finally {
+	}
+snippet rst
+	ResultSet ${1:rst}${2: = null}${3};${4}
+snippet sout
+	System.out.println(${1:text});${2:}
+snippet soutv
+	System.out.println("${1:var}: " + $1);${2:}
+snippet todo
+	// TODO: ${1}
+snippet dbm
+	void debug(Object...os) {
+		System.out.println(Arrays.deepToString(os));
+	}
+snippet db
+	debug("${1:val}", $1);${2}
+snippet tos
+	public String toString() {
+		return ${1:String.format(}${2};
+	}

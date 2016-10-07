@@ -1,0 +1,53 @@
+var koa = require('koa');
+var Router = require('koa-router');
+var mount = require('koa-mount');
+var bodyParser = require('koa-body-parser');
+var koaPg = require('koa-pg');
+var app = koa();
+
+var APIv1 = new Router();
+
+var users = {};
+users['nanodocumet'] = {password:'pass'};
+
+app.use(koaPg('postgres://dbms:password.1@localhost:5432/sporty'))
+
+app.use(bodyParser());
+
+APIv1.get('/users/:id', show);
+
+APIv1.post('/users', save);
+
+app.use(mount('/v1', APIv1.middleware()));
+
+app.poweredBy = false;
+
+function save(next) {
+  this.body = this.request.body;
+  if (!this.body.username) this.throw(400, '.username required');
+  users[this.body.username] = this.body;
+
+  yield next;
+}	
+
+function *show(next) {
+  if (users[this.params.id]) {
+  	var user = {user:{username:this.params.id}};
+  	this.body = user;
+  } else {
+  	this.body = {code:404,message:'User not found here'};
+  	this.status = 404;
+  }
+  yield next;
+}
+
+app.use(function *(next) {
+    // Here we have access to this.pg.db.client which is client returned from pg.connect().
+    var result = yield this.pg.db.client.query_('SELECT * FROM genders')
+    console.log('result:', result)
+
+    this.body = result.rows[0].name;
+})
+
+var port = Number(process.env.PORT || 5000);
+app.listen(port);

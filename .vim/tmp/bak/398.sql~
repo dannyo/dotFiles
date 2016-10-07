@@ -1,0 +1,11 @@
+CREATE TABLE gift_card (
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+`code` varchar(255) NOT NULL,
+`sender_id` int(10) NOT NULL,
+`recipient_email` varchar(255) NOT NULL,
+`redeemed_by_user_id` int(10),
+`purchased_amount` decimal(7,2) NOT NULL,
+`remaining_balance` decimal(7,2) NOT NULL,
+`created_at` varchar(255) NOT NULL,
+`updated_at` varchar(255)
+);;

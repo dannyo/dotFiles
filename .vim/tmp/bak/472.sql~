@@ -1,0 +1,14 @@
+CREATE TABLE `final_sale_item` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Surrogate key',
+  `item_id` int(11) unsigned NOT NULL COMMENT 'Item ID',
+  `user_id` int(10) unsigned DEFAULT NULL COMMENT 'User ID of seller',
+  `start` datetime NOT NULL COMMENT 'Start datetime',
+  `end` datetime COMMENT 'End datetime',
+  `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT 'final-sale status: 0-inactive, 1-active',
+  `created_at` datetime NOT NULL COMMENT 'Start datetime',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'The latest create/update time',
+  PRIMARY KEY (`id`),
+  KEY `final_sale_item_idx` (`item_id`),
+  CONSTRAINT `final_sale_item_fk` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
+  CONSTRAINT `user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

@@ -1,0 +1,189 @@
+var finance = angular.module('finance', ['googlechart', 'underscore', 'ui.multiselect']);
+
+function statsController($scope, $http, _) {
+    $scope.PAGE_TITLE = "Statistics";
+    $scope.date = new Date().toLocaleDateString();
+    $scope.description = null;
+    $scope.amount = null;
+    $scope.paymentType = null;
+    $scope.tag = null;
+    $scope.recordTags = [];
+
+    $scope.getFilteredFinanceRecords = function(){
+        $scope.filteredFinanceRecords =  _.reject($scope.financeRecords, function(record){
+            if($scope.tagFilters.length > 0 ){
+                return $scope.tagFilters.indexOf(record.tag) < 0;
+            }
+            return false; 
+        });
+        return $scope.filteredFinanceRecords;
+    }
+
+    $scope.$watch('tagFilters', function(){
+        $scope.updateChartData();
+    });
+
+    $scope.getAvailableRecordTags = function(financeRecords){
+        return  _.uniq(_.map(financeRecords, function(record){
+            return record.tag;    
+        }), function(tag){
+            return tag;
+        });
+
+    }
+
+    $scope.updateChartData = function(){
+        $scope.getdailyExpenditureChartData = {
+            "type": "ColumnChart",
+            "cssStyle": "height:800px; width:600px;",
+            "data": {
+                "cols": [
+                    {
+                        "id": "day",
+                        "label": "Day",
+                        "type": "string"
+                    },
+                    {
+                        "id": "amount-id",
+                        "label": "Amount Spent",
+                        "type": "number"
+                    }
+                ],
+                "rows": $scope.getDailyExpenditureChartRows()
+            },
+            "options": {
+                "title": "Daily Expenditure",
+                "isStacked": "true",
+                "fill": 20,
+                "displayExactValues": true,
+                "vAxis": {
+                    "title": "Amount Spent",
+                    "gridlines": {
+                        "count": 10
+                    }
+                },
+                "hAxis": {
+                    "title": "Date"
+                }
+            },
+            "formatters": {}
+        }; 
+    }
+
+    $http.get('/records').success(function(data) {
+        $scope.financeRecords = data;
+        $scope.getFilteredFinanceRecords();
+        $scope.recordTags = $scope.getAvailableRecordTags($scope.financeRecords); 
+        $scope.calculateTotalSpent();
+        $scope.calculateAverageCostPerDay();
+        $scope.calculateProjectedAnnualCost();
+        $scope.getAmountSpentDaily();
+        $scope.getDailyExpenditureChartRows();
+        $scope.updateChartData();
+    });
+
+    // -----------------------
+    $scope.tagFilters = [];
+
+
+    //--------------------
+    $scope.sortByDate = function (record){
+        return new Date(record.date);
+    }
+
+    $scope.totalSpent = 0;
+    $scope.calculateTotalSpent = function() {
+        var i;
+        for(i=0; i< $scope.financeRecords.length ;i++){
+            $scope.totalSpent += parseFloat($scope.financeRecords[i].amount.replace(',',''));
+        }
+        $scope.totalSpent = $scope.totalSpent.toFixed(2);
+    }
+
+    $scope.averageCostPerDay = 0;
+    $scope.calculateAverageCostPerDay = function(){
+        var today=new Date();
+        var beginningOfYear=new Date(2014,0,1);
+        var diff=today-beginningOfYear;
+        numDaysPassed=Math.round(diff/1000/60/60/24);
+        $scope.averageCostPerDay = ($scope.totalSpent/numDaysPassed).toFixed(2);
+    };
+
+    $scope.projectedAnnualCost = 0;
+    $scope.calculateProjectedAnnualCost = function() {
+        $scope.projectedAnnualCost = ($scope.averageCostPerDay * 365).toFixed(2);
+    };
+   // refactor this into service  
+    $scope.calculateFilteredTotalSpent = function(filteredData){
+        var filteredTotalSpent = 0;
+        _.each(filteredData, function(record) {
+            filteredTotalSpent += parseFloat(record.amount.replace(',',''));
+        });
+        return filteredTotalSpent.toFixed(2);
+    };
+
+   // refactor this into service  
+    $scope.calculateFilteredAverageCostPerDay = function(filteredData){
+        return ($scope.calculateFilteredTotalSpent(filteredData)/getNumberOfDaysPassed()).toFixed(2); 
+    };
+ 
+    // refactor this into service  
+    $scope.calculateFilteredProjectedAnnualCost = function(filteredData){
+        return ($scope.calculateFilteredAverageCostPerDay(filteredData) * 365).toFixed(2);
+    };
+
+    //refactor this into service
+    function getNumberOfDaysPassed(){
+        var today=new Date();
+        var beginningOfYear=new Date(2014,0,1);
+        var diff=today-beginningOfYear;
+        numDaysPassed=Math.round(diff/1000/60/60/24);
+        return numDaysPassed;
+    }
+
+    $scope.getAmountSpentDaily = function(){
+        $scope.amountSpentDaily = [];
+        var dataByDate = _.groupBy($scope.getFilteredFinanceRecords(), function(record) {
+                return record.date;
+            });
+
+        _.each(_.keys(dataByDate), function(date){
+            var dailyTotal = 0;
+            var dailyDescription = '';
+            _.each(dataByDate[date], function(record){
+                dailyTotal+= parseFloat(record.amount.replace(',',''));
+                dailyDescription +=record.description + ': ' + record.amount + '\n';
+            });
+            $scope.amountSpentDaily.push({
+                date: date,
+                amount: dailyTotal.toFixed(2),
+                description: dailyDescription
+            });
+        });
+        $scope.amountSpentDaily = _.sortBy($scope.amountSpentDaily, function(record){
+            return new Date(record.date);
+        });
+        return $scope.amountSpentDaily;
+    };
+
+    $scope.getDailyExpenditureChartRows = function (){
+        $scope.chartRows = [];
+
+        _.each($scope.getAmountSpentDaily(), function(dayRecord){
+            $scope.chartRows.push({
+                "c": [
+                    {
+                        "v": dayRecord.date
+                    },
+                    {
+                        "v": dayRecord.amount,
+                        //"f": "$"+ dayRecord.amount + "\n" +dayRecord.description
+                    }
+                ]
+            });
+
+        });
+        return $scope.chartRows;
+    }; 
+
+}

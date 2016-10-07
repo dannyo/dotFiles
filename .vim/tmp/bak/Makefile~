@@ -1,0 +1,7 @@
+test:
+		@./node_modules/.bin/mocha
+
+lint:
+	./node_modules/.bin/jslint --onevar false *.js
+
+.PHONY: test

@@ -1,0 +1,539 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# Usage: refresh_elasticsearch=false import_quartile=false refresh_redis=false refresh_database=true generate_css_js=false composer_install=false npm_install=false disable_xdebug=false DNS=false vagrant provision
+
+# UTC        for Universal Coordinated Time
+# EST        for Eastern Standard Time
+# US/Central for American Central
+# US/Eastern for American Eastern
+VAGRANTFILE_API_VERSION          = "2"
+server_timezone                  = "UTC"
+hostname                         = "dev.tradesy.com"
+server_ip                        = "3.3.3.3"
+
+if (/darwin/ =~ RUBY_PLATFORM) != nil # mac
+  server_memory                    = `sysctl -n hw.memsize |   awk '{$2=$1/(1024^2)/2; print $2}'`.chomp # one half of available system memory
+  server_swap                      = `sysctl hw.memsize  | awk '{$2=$2/(1024^2)/8; print $2}'`.chomp # one eighth of memory
+  server_cpu                       = `sysctl hw.ncpu | awk '{$2=$2/(2); print $2}'`.chomp # half of cpus
+else #linux hopefully
+  server_memory                    = `grep 'MemTotal' /proc/meminfo |   sed -e 's/MemTotal://' |  awk '{$1=$1/(1024)/2;  } END  { printf("%.0f", $1) }'`.chomp # one half of available system memory
+  server_swap                      = `grep 'MemTotal' /proc/meminfo |   sed -e 's/MemTotal://' |  awk '{$1=$1/(1024)/8;  } END  { printf("%.0f", $1) }'`.chomp # one eighth of memory
+  server_cpu                       = `nproc | awk '{$1=$1/(2); print $1}'`.chomp # half of cpus
+end
+
+
+## Tradesy Repo locations
+repos = Hash.new
+repos = {
+  'tradesy' => 
+    { "local"  =>  "../tradesy/",
+      "remote" =>   "/var/www/sites/dev/tradesy",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy.git"
+    },
+  'tradesy-admin' => 
+    { "local"  =>  "../tradesy-admin/",
+      "remote" =>   "/var/www/sites/dev/tradesy-admin",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-admin.git"
+    },
+  'tradesy-admin-ios' =>
+    { "local"  =>  "../tradesy-admin-ios/",
+      "remote" =>   "/var/www/sites/dev/tradesy-admin-ios",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-admin-ios.git"
+    },
+  'tradesy-analytics' => 
+    { "local"  =>  "../tradesy-analytics/",
+      "remote" =>   "/var/www/sites/dev/tradesy-analytics",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-analytics.git"
+    },
+  'tradesy-android' =>
+    { "local"  =>  "../tradesy-android/",
+      "remote" =>   "/var/www/sites/dev/tradesy-android",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-android.git"
+    },
+  'tradesy-ansible' =>
+    { "local"  =>  "../tradesy-ansible/",
+      "remote" =>   "/var/www/sites/dev/tradesy-ansible",
+      "dmode"   =>  "775",
+      "fmode"   =>  "666",
+      "owner"   =>  "vagrant",
+      "group"   =>  "vagrant",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-ansible.git"
+    },
+  'tradesy-automation' =>
+    { "local"  =>  "../tradesy-automation/",
+      "remote" =>   "/var/www/sites/dev/tradesy-automation",
+      "dmode"   =>  "775",
+      "fmode"   =>  "666",
+      "owner"   =>  "vagrant",
+      "group"   =>  "vagrant",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-automation.git"
+    },
+  'tradesy-brand' =>
+    { "local"  =>  "../tradesy-brand/",
+      "remote" =>   "/var/www/sites/dev/tradesy-brand",
+      "dmode"   =>  "775",
+      "fmode"   =>  "666",
+      "owner"   =>  "vagrant",
+      "group"   =>  "vagrant",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-brand.git"
+    },
+  'tradesy-build' =>
+    { "local"  =>  "../tradesy-build/",
+      "remote" =>   "/var/www/sites/dev/tradesy-build",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-build.git"
+    },
+  'tradesy-common' => 
+    { "local"  =>  "../tradesy-common/",
+      "remote" =>   "/var/www/sites/dev/tradesy-common",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-common.git"
+    },
+  'tradesy-cron' => 
+    { "local"  =>  "../tradesy-cron/",
+      "remote" =>   "/var/www/sites/dev/tradesy-cron",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-cron.git"
+    },
+  'tradesy-database' => 
+    { "local"  =>  "../tradesy-database/",
+      "remote" =>   "/var/www/sites/dev/tradesy-database",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-database.git"
+    },
+  'tradesy-deep-learning' =>
+    { "local"  =>  "../tradesy-deep-learning/",
+      "remote" =>   "/var/www/sites/dev/tradesy-deep-learning",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-deep-learning.git"
+    },
+  'tradesy-data-tracking' =>
+    { "local"  =>  "../tradesy-data-tracking/",
+      "remote" =>   "/var/www/sites/dev/tradesy-data-tracking",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-data-tracking.git"
+    },
+  'tradesy-documentation' =>
+    { "local"  =>  "../tradesy-documentation/",
+      "remote" =>   "/var/www/sites/dev/tradesy-documentation",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-documentation.git"
+    },
+  'tradesy-fraud' => 
+    { "local"  =>  "../tradesy-fraud/",
+      "remote" =>   "/var/www/sites/dev/tradesy-fraud",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-fraud.git"
+    },
+<<<<<<< Updated upstream
+  'tradesy-service-recommendations' => 
+=======
+  'tradesy-service-recommendations' =>
+>>>>>>> Stashed changes
+    { "local"  =>  "../tradesy-service-recommendations/",
+      "remote" =>   "/var/www/sites/dev/tradesy-service-recommendations",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-service-recommendations.git"
+    },
+  'tradesy-sitemaps' =>
+    { "local"  =>  "../tradesy-sitemaps/",
+      "remote" =>   "/var/www/sites/dev/tradesy-sitemaps",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-sitemaps.git"
+    },
+  'tradesy-tests' => 
+    { "local"  =>  "../tradesy-tests/",
+      "remote" =>   "/var/www/sites/dev/tradesy-tests",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-tests.git"
+    },
+  'tradesy-api' =>
+    { "local"  =>  "../tradesy-api/",
+      "remote" =>   "/var/www/sites/dev/tradesy-api",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-api.git"
+    },
+  'tradesy-threads' =>
+    { "local"  =>  "../tradesy-threads/",
+      "remote" =>   "/var/www/sites/dev/tradesy-threads",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-threads.git",
+      "repo_branch" => "gh-pages"
+    },
+  'tradesy-utility' =>
+    { "local"  =>  "../tradesy-utility/",
+      "remote" =>   "/var/www/sites/dev/tradesy-utility",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-utility.git"
+    },
+  'tradesy_ios_v2' =>
+    { "local"  =>  "../tradesy_ios_v2/",
+      "remote" =>   "/var/www/sites/dev/tradesy_ios_v2",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy_ios_v2.git"
+    },
+  'tradesybot' => 
+    { "local"  =>  "../tradesybot/",
+      "remote" =>   "/var/www/sites/dev/tradesybot",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesybot.git"
+    },
+  'trsy.co' =>
+    { "local"  =>  "../trsy.co/",
+      "remote" =>   "/var/www/sites/dev/trsy.co",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/trsy.co.git"
+    },
+  'tradesy-docker' => 
+    { "local"  =>  "../tradesy-docker/",
+      "remote" =>   "/var/www/sites/dev/tradesy-docker",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-docker.git"
+    },
+    'tradesy-image-mapper' => 
+    { "local"  =>  "../tradesy-image-mapper/",
+      "remote" =>   "/var/www/sites/dev/tradesy-image-mapper",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-image-mapper.git"
+    },
+  'tradesy-item-ranker' => 
+    { "local"  =>  "../tradesy-item-ranker/",
+      "remote" =>   "/var/www/sites/dev/tradesy-item-ranker",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-item-ranker.git"
+    },
+  'tradesy-ml' => 
+    { "local"  =>  "../tradesy-ml/",
+      "remote" =>   "/var/www/sites/dev/tradesy-ml",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-ml.git",
+    },
+  'tradesy-ml-dc' => 
+    { "local"  =>  "../tradesy-ml-dc/",
+      "remote" =>   "/var/www/sites/dev/tradesy-ml-dc",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-ml.git",
+      "repo_branch" => "divide_and_conquer"
+    },
+  'tradesy-internal-api' => 
+    { "local"  =>  "../tradesy-internal-api/",
+      "remote" =>   "/var/www/sites/dev/tradesy-internal-api",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-internal-api.git"
+    },
+  'tradesy-shopify' =>
+    { "local"  =>  "../tradesy-shopify/",
+      "remote" =>   "/var/www/sites/dev/tradesy-shopify",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-shopify.git"
+    },
+    'tradesy-labs' =>
+    { "local"  =>  "../labs/",
+      "remote" =>   "/var/www/sites/dev/labs",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+    },
+    'tradesy-vips' =>
+    { "local"  =>  "../tradesy-vips/",
+      "remote" =>   "/var/www/sites/dev/tradesy-vips",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "www-data",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-vips.git"
+    },
+}
+
+is_up = is_repo = repo_flag_auto = dont_repo = false
+repo_flag_auto = ENV['PULL_REPOS'] == 'true' ? true : repo_flag_auto
+dont_repo = ENV['PULL_REPOS'] == 'false' ? true : dont_repo
+show_gui = ENV['GUI'] == 'true' ? true : false 
+exit_after_pull = ENV['EXIT_AFTER_PULL'] == 'true' ? true : false
+
+is_up = ARGV[0] == "up" ? true : is_up
+is_reload = ARGV[0] == "reload" ? true : is_up
+is_provision= ARGV[0] == "provision" ? true : is_repo
+
+# Check for repos
+if (is_up || repo_flag_auto || exit_after_pull ) &&  !dont_repo
+  repos.each do | key, array|
+    if array['repo_url'].nil? then
+      next
+    end
+
+    #if directory exists, prompt user to pull Y/N
+    if  File.directory?(array['local'])
+      Dir.chdir(array['local']) do
+        #check if it's git repo
+        if `git rev-parse --is-inside-work-tree`
+        #check if up to date
+          check = `git fetch --dry-run 2>&1`
+          #length 0 sometimes when up-to-date length 27 when 'Fetching repository, done.'
+          #If different length assume not up-to-date
+          if check.length == 0 || check.length == 27
+            puts "Repo: \033[32m"+ key + "\033[0m up-to-date"
+          else
+            if !repo_flag_auto
+              puts "Hello, would you like me to git pull \033[32m"+key+"\033[0m [y,N]", "> "
+              response = $stdin.gets.chomp
+              if response.strip.downcase == 'y'
+                system('git pull')
+              end
+            else
+                system('git pull')
+            end
+          end
+        end
+      end
+    else
+      puts "Repo: \033[31m"+key+"\033[0m not found, will clone"
+      #Dir.chdir('..') do
+        `git clone "#{array['repo_url']}" "#{array['local']}"` 
+        if array.has_key?('repo_branch')
+          Dir.chdir("#{array['local']}") do
+            `git checkout "#{array['repo_branch']}"`
+          end 
+        end
+      #end
+    end
+  end
+  if ( exit_after_pull )
+    exit
+  end
+end
+
+# ask whether user wants to use linux node modules or mac 
+mac_node= ENV['MAC_NODE'] == 'true' ? true : (ENV['MAC_NODE'] == 'false' ? false : false) ;
+# OPTIONALS Refresh/Installs
+refresh_elasticsearch = ENV['refresh_elasticsearch'] == 'false' ? false : true
+import_quartile = ENV['import_quartile'] == 'false' ? false : true
+refresh_redis = ENV['refresh_redis'] == 'false' ? false : true
+refresh_database = ENV['refresh_database'] == 'false' ? false : true
+generate_css_js = ENV['generate_css_js'] == 'false' ? false : true
+composer_install = ENV['composer_install'] == 'false' ? false : true
+npm_install = ENV['npm_install'] == 'false' ? false : true
+disable_xdebug = ENV['disable_xdebug'] == 'true' ? true : false
+#if (is_up || is_provision) then
+#  if ENV['MAC_NODE'] != 'false' && ENV['MAC_NODE'] != 'true' then
+#    puts "Would you like to use Linux node_modules or Mac node_modules (mac requires to have ran 'npm install' on your mac and then rename the node_modules directory to mac_node_modules) \033[32m\033[0m [mac,LINUX] > "
+#    response = $stdin.gets.chomp
+#    if response.strip.downcase == 'linux'
+#      mac_node=false
+#    end
+#    if response.strip.downcase == 'mac'
+#      mac_node=true
+#    end
+#  end
+#end
+
+ansible_host                     = "vagrant"
+tradesy_ansible_repo_directory   = "../tradesy-ansible/"
+ENV['ANSIBLE_CONFIG']            = tradesy_ansible_repo_directory + "ansible.cfg"
+ansible_inventory_file           = tradesy_ansible_repo_directory + "hosts"
+ping_office_gateway_to_keep_bridged_adapter_alive = ENV['DNS'] == 'false' ? false : true
+mac_username                     = `printf "%s" $USER`
+remove_old_vagrant_box_script   =  tradesy_ansible_repo_directory + "scripts/remove_old_vagrant_boxes.sh"
+mac_username =ENV['DNS_NAME'] || mac_username
+
+if (ENV['DNS'] == 'false')
+  provision_DNS_flag = false
+  choose_interface = false
+elsif (ENV['DNS'] == 'choose')
+  provision_DNS_flag = true
+  choose_interface = true
+else
+  provision_DNS_flag = true
+  choose_interface = false
+end
+
+
+if (ARGV[0] == "box" && ARGV[1] == "update" ) 
+  #Removing all but latest 2 vagrant boxes
+  system("sh #{remove_old_vagrant_box_script}")
+end
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # Set server to the Tradesy Development web server
+  config.vm.box = "tradesy/development"
+  config.vm.box_check_update = false
+
+  config.vm.host_name = hostname
+  config.ssh.private_key_path = "./vagrant_secure_key"
+
+  # Create a static IP
+  config.vm.network :private_network, ip: server_ip
+  if ( provision_DNS_flag && (is_up || is_reload))
+    if (choose_interface)
+      config.vm.network "public_network"
+    else
+      preferred_interfaces = ['Ethernet', 'eth0', 'Wi-Fi', 'Thunderbolt 1', 'Thunderbolt 2']
+      host_interfaces = %x( VBoxManage list bridgedifs | grep ^Name ).gsub(/Name:\s+/, '').split("\n")
+      $network_interface_to_use = preferred_interfaces.map{ |pi| host_interfaces.find { |vm| vm =~ /#{Regexp.quote(pi)}/ } }.compact[0]
+      config.vm.network "public_network", bridge: $network_interface_to_use
+    end
+  end
+  config.vm.network "forwarded_port", guest: 6379, host: 6379
+  config.vm.network "forwarded_port", guest: 7000, host: 7000
+  config.vm.network "forwarded_port", guest: 7001, host: 7001
+<<<<<<< Updated upstream
+  
+  # Ports for docker services:
+
+  # tradesy-service-recommendations - TCP Port 8080
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
+=======
+  config.vm.network "forwarded_port", guest: 8090, host: 8090
+>>>>>>> Stashed changes
+
+  # Use NFS for the shared folder
+#  config.vm.synced_folder ".", "/vagrant",
+#            id: "core",
+#            :nfs => true,
+#            :mount_options => ['nolock,vers=3,udp,noatime']
+
+# LOAD SYNCED REPO DIRECTORIES
+  repos.each do | key, array|
+    config.vm.synced_folder array['local'], array['remote'], :owner=> array['owner'], :group=>array['group'], :mount_options => ['dmode='+array['dmode'], 'fmode='+array['fmode']]
+  end
+
+  # If using VirtualBox
+  config.vm.provider :virtualbox do |vb|
+
+    vb.gui = show_gui
+    vb.name = "Tradesy_Dev"
+
+    # Set server memory
+    vb.customize ["modifyvm", :id, "--memory", server_memory]
+
+    vb.customize ["modifyvm", :id, "--cpus", server_cpu]
+    # Set the timesync threshold to 10 seconds, instead of the default 20 minutes.
+    # If the clock gets more than 15 minutes out of sync (due to your laptop going
+    # to sleep for instance, then some 3rd party services will reject requests.
+    vb.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+
+    # Prevent VMs running on Ubuntu to lose internet connection
+    # vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    # vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+
+  end
+  if ( provision_DNS_flag && (is_up || is_reload))
+    config.vm.provision "dns", type: "ansible", run: "always" do |ansible|
+      ansible.extra_vars      = { target: ansible_host, ansible_ssh_user: "vagrant", username: mac_username }
+      ansible.inventory_path  = ansible_inventory_file
+      ansible.verbose         = "v"
+      ansible.limit           = "all"
+      ansible.playbook        = tradesy_ansible_repo_directory+"create_route53_record.yml"
+    end
+  end
+  config.vm.provision "ansible" do |ansible|
+    ansible.extra_vars      = { target: ansible_host, ansible_ssh_user: "vagrant", sudo: true, path: "/var/www/sites/dev/tradesy-common/config/dev/", env: "dev"}
+    ansible.inventory_path  = ansible_inventory_file
+    ansible.verbose         = "v"
+    ansible.limit           = "all"
+    ansible.playbook        = tradesy_ansible_repo_directory+"deploy_secrets.yml"
+  end
+  if(ENV['CONFIG_ONLY'] != 'true')
+  config.vm.provision "ansible" do |ansible|
+    ansible.extra_vars      = { target: ansible_host, ansible_ssh_user: "vagrant", sudo: true, use_linux_node: !mac_node, ping_office_gateway_to_keep_bridged_adapter_alive: ping_office_gateway_to_keep_bridged_adapter_alive, refresh_elasticsearch: refresh_elasticsearch, refresh_redis: refresh_redis, refresh_database: refresh_database, composer_install: composer_install, npm_install: npm_install, generate_css_js: generate_css_js, import_quartile: import_quartile, disable_xdebug: disable_xdebug }
+    ansible.inventory_path  = ansible_inventory_file
+    ansible.verbose         = "v"
+    ansible.limit           = "all"
+    ansible.playbook        = tradesy_ansible_repo_directory+"provision_vagrant_code.yml"
+  end
+  end
+end

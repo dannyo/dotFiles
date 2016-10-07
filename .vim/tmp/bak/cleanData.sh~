@@ -1,0 +1,15 @@
+#!/bin/bash
+
+for file in *.{csv,txt}
+do
+	sed -i -E 's/\s*,\s*/,/g' "$file"
+	sed -i -E 's/\n\s+//g' "$file"
+	sed -i -E 's/^\s+//g' "$file"
+	sed -i -E 's/\.00//g' "$file"
+done
+
+for f in *IV_SETS.txt
+do mv "$f" "`basename "$f" .txt`.csv" 
+done
+
+echo "done"

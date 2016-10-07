@@ -1,0 +1,125 @@
+development: &development
+  company:
+    name: Shop Hers, Inc.
+    bank:
+      account_name: Shop Hers, Inc.
+      routing_number: 987654321
+      ach_id: 1234567890
+  restocking_value: 0.95 #expressed as a percentage
+  braintree:
+    environment: :sandbox
+    merchant_id: your-merchant-id
+    public_key: your-public-key
+    private_key: your-private-key
+    descriptor_prefix: "SHOP-HERS   *"  # 3, 7 or 12 characters before asterisk, spaces are needed
+    descriptor_length: 22
+    descriptor_phone: 888-883-6544
+  carriers:
+    dhl:
+      login: unknown
+      password: unknown
+      test: true  #leave out for production
+    fedex:
+      key: APIKey
+      password: APIPassword
+      account: FedExAccountNumber
+      login: FedExMeterNumber
+
+      test: true  #leave out for production
+    ups:
+      key: XmlAccessKey
+      login: UPSDotComLogin
+      password: UPSDotComPassword
+      test: true  #leave out for production
+    usps:
+      login: DeveloperUsername
+      test: true
+  newsletter:
+    provider: Campaign Monitor
+    api_key: your-api-key
+    list_product_announcement: your-list-id
+  search:
+    index_name: development
+    index_owner: developer01
+  supportfu:
+    key: HashKey
+  maxmind:
+    key: LicenseKey
+  app_boy:
+    key: secret
+    app_group_id: 0
+  notification_center: AppBoy
+  api:
+    public:
+      domains:
+        default: localhost.localdomain
+        asset: localhost.localdomain
+    private:
+  marketo:
+    enabled: false # ability to turn ON/OFF
+    end_point: https-endpoint
+    api_version: "2_3"
+    access_key: access-key
+    encryption_key: encryption-key
+  app_boy:
+    key: company-key
+    app_group_id: app-group-identifier
+  notification_center: AppBoy
+  deep_link_scheme: app-scheme-name
+  api:
+    public:
+      domains:
+        default: api-server-domain
+        asset: asset-server-domain
+  datapop:
+    adapter: :null
+    host:
+    login:
+    password:
+  twilio:
+    account_sid:
+    auth_token:
+    phone:
+  forter:
+    endpoint: https://api.forter.com/
+    user:
+    site_id:
+    enabled: false
+  paypal:
+    mode: sandbox # live for production
+    sender_email: sandbox@example.com # paypal payment sender
+    sandbox_email_address: sandbox@example.com
+    app_id: APP-80W284485P519543T # this is standard Sandbox app_id
+    username: security-userid
+    password: security-password
+    signature: security-signature
+    # cert_path: "config/cert_key.pem"   # repace signature with certificate
+    # token: token                       # or use token authentication
+    # token_secret: token-secret
+    # device_ipaddress: 127.0.0.1        # with device ip address
+    # http_proxy: http://ipaddress:3129/ # with proxy
+    # verbose_logging: true
+    http_timeout: 30
+  affirm:
+    public_api_key:
+    private_api_key:
+    environment: :sandbox
+    product_key:
+    js_url: https://cdn1-sandbox.affirm.com/js/v2/affirm.js
+
+test:
+  <<: *development
+  notification_center: Fake
+
+qa:
+  <<: *development
+
+qa2:
+  <<: *development
+
+staging:
+  <<: *development
+
+production:
+  <<: *development
+

@@ -1,0 +1,3 @@
+ALTER TABLE `user` ADD COLUMN `published_first_listing` boolean default false;
+UPDATE `user` SET `published_first_listing` = 1 where `id` in  (SELECT DISTINCT(`user_id`) FROM `item` where `status` in ('Sale', 'Pending', 'Suspect') );
+UPDATE `user` SET `published_first_listing` = 1 where `id` in  (SELECT DISTINCT(`seller_id`) FROM `purchase`);

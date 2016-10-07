@@ -1,0 +1,177 @@
+#[Shop-Hers Development]
+127.0.0.1 localhost.localdomain
+127.0.0.1 localhost
+
+# BEGIN DYNAMIC BLOCK - DO NOT EDIT MANUALLY
+# BEGIN DYNAMIC BLOCK - DO NOT EDIT MANUALLY
+
+# Local Development Entries
+# -------------------------
+
+#[Local Development VM IPs]
+3.3.3.3         dev-www.tradesy.com dev.tradesy.com dev-www.tradesy.io dev.tradesy.io
+3.3.3.3         dev-tradesy.recycledmediainc.com dev-tradesy.recycledmediainc.io
+3.3.3.3         dev-api.tradesy.com dev-api.tradesy.io
+3.3.3.3         dev-image-mapper.tradesy.com dev-image-mapper.tradesy.io
+3.3.3.3         dev-utility.tradesy.com dev-utility.tradesy.io
+3.3.3.3         dev-sitemaps.tradesy.com dev-sitemaps.tradesy.io
+3.3.3.3         dev-threads.tradesy.com dev-threads.tradesy.io
+3.3.3.3         dev.trsy.co
+3.3.3.3			labs.tradesy.com
+
+
+
+# Amazon Web Services (AWS) Entries
+# ---------------------------------
+
+#[AWS Apache Public IPs]
+52.1.90.171     public_prod_apache_01
+54.84.113.202   public_prod_apache_02
+52.1.227.192    public_prod_apache_03
+54.84.82.240    public_prod_apache_04
+52.0.202.171    public_stage_apache_01 stage-tradesy.recycledmediainc.com stage-api.tradesy.com
+
+#[AWS Apache Private IPs]
+172.30.1.143    apache01.tradesy.com prod_apache_01
+172.30.4.69     apache02.tradesy.com prod_apache_02
+172.30.1.216    apache03.tradesy.com prod_apache_03
+172.30.4.174    apache04.tradesy.com prod_apache_04
+172.30.1.197    stage_apache_01  
+
+#[AWS Cron Public IPs]
+52.1.111.73     public_prod_cron_01
+52.1.236.31     public_prod_cron_02
+
+#[AWS Cron Private IPs]
+172.30.1.17     cron01.tradesy.com prod_cron_01
+172.30.1.71     cron02.tradesy.com prod_cron_02
+
+#[AWS Elasticsearch Public IPs]
+52.0.204.214    public_prod_elasticsearch_01 public_prod_elasticsearch_master_01
+52.1.230.214    public_prod_elasticsearch_02 public_prod_elasticsearch_master_02
+52.1.132.94     public_prod_elasticsearch_03 public_prod_elasticsearch_master_03
+52.1.234.61     public_prod_elasticsearch_04 public_prod_elasticsearch_master_04
+54.152.226.174  public_prod_elasticsearch_05 public_prod_elasticsearch_data_01
+54.85.156.164   public_prod_elasticsearch_06 public_prod_elasticsearch_data_02
+52.1.115.89     public_prod_elasticsearch_07 public_prod_elasticsearch_data_03
+54.152.177.145  public_prod_elasticsearch_08 public_prod_elasticsearch_data_04
+52.1.171.68     public_prod_elasticsearch_09 public_prod_elasticsearch_data_05
+52.1.54.50      public_prod_elasticsearch_10 public_prod_elasticsearch_data_06
+54.152.79.146   public_prod_elasticsearch_11 public_prod_elasticsearch_data_07
+52.1.60.95      public_prod_elasticsearch_12 public_prod_elasticsearch_data_08
+
+#[AWS Elasticsearch Private IPs]
+172.30.1.16    esc01.tradesy.com prod_elasticsearch_01 prod_elasticsearch_master_01
+172.30.1.20     esc02.tradesy.com prod_elasticsearch_02 prod_elasticsearch_master_02
+172.30.1.21     esc03.tradesy.com prod_elasticsearch_03 prod_elasticsearch_master_03
+172.30.1.19     esc04.tradesy.com prod_elasticsearch_04 prod_elasticsearch_master_04
+172.30.1.184    esc05.tradesy.com prod_elasticsearch_05 prod_elasticsearch_data_01
+172.30.1.245    esc06.tradesy.com prod_elasticsearch_06 prod_elasticsearch_data_02
+172.30.1.186    esc07.tradesy.com prod_elasticsearch_07 prod_elasticsearch_data_03
+172.30.1.182     esc08.tradesy.com prod_elasticsearch_08 prod_elasticsearch_data_04
+172.30.1.183     esc09.tradesy.com prod_elasticsearch_09 prod_elasticsearch_data_05
+172.30.1.87     esc10.tradesy.com prod_elasticsearch_10 prod_elasticsearch_data_06
+172.30.1.236    esc11.tradesy.com prod_elasticsearch_11 prod_elasticsearch_data_07
+172.30.1.166     esc12.tradesy.com prod_elasticsearch_12 prod_elasticsearch_data_08
+
+#[AWS Load Public IPs]
+52.20.120.150   load01.tradesy.com public_internal_load_01
+52.2.212.63     load02.tradesy.com public_internal_load_02
+52.20.2.181     load03.tradesy.com public_internal_load_03
+52.2.196.98     load04.tradesy.com public_internal_load_04
+
+#[AWS Load Private IPs]
+172.30.1.135    private_internal_load_01
+172.30.1.193    private_internal_load_01
+172.30.1.84     private_internal_load_01
+172.30.1.96     private_internal_load_01
+
+#[AWS MySQL Percona Cluster Public IPs]
+52.1.181.253    public_prod_mysql_master_backup_1a
+52.0.99.7       public_prod_mysql_master_main_1b
+52.1.217.71     public_prod_mysql_master_backup_1e
+54.84.82.27     public_prod_mysql_slave
+54.152.143.185  public_prod_mysql_slave_secret
+
+#[AWS MySQL Percona Cluster Private IPs]
+172.30.2.253    mysql_master_backup_1a
+172.30.1.29     mysql_master_main_1b
+172.30.4.153    mysql_master_backup_1e
+172.30.1.120    mysql_slave
+172.30.1.212    mysql_slave_secret
+
+#[AWS RabbitMQ Public IPs]
+54.174.195.12   public_prod_rabbitmq_master
+54.208.42.16    public_prod_rabbitmq_backup_1a
+54.174.46.154   public_prod_rabbitmq_backup_1e
+
+#[AWS RabbitMQ Private IPs]
+172.30.1.204    rabbitmq.tradesy.com prod_rabbitmq_master
+172.30.2.109    rabbitmq_slave.tradesy.com prod_rabbitmq_backup_1a
+172.30.4.65     rabbitmq_slave2.tradesy.com prod_rabbitmq_backup_1e
+
+#[AWS Redis Public IPs]
+52.2.10.52      public_prod_redis_1a_01
+52.2.144.169    public_prod_redis_1a_02
+52.2.109.176    public_prod_redis_1b_01
+52.2.150.83     public_prod_redis_1b_02
+52.2.93.14      public_prod_redis_1e_01
+52.2.40.254     public_prod_redis_1e_02
+
+#[AWS Redis Private IPs]
+172.30.2.154    redis1a01.tradesy.com prod_redis_1a_01
+172.30.2.153    redis1a02.tradesy.com prod_redis_1a_02
+172.30.1.43     redis1b01.tradesy.com prod_redis_1b_01
+172.30.1.45     redis1b02.tradesy.com prod_redis_1b_02
+172.30.4.243    redis1e01.tradesy.com prod_redis_1e_01
+172.30.4.244    redis1e02.tradesy.com prod_redis_1e_02
+
+#[OLD AWS Redis Public IPs]
+52.1.106.32     public_prod_redis_01
+52.1.57.163     public_prod_redis_02
+52.0.65.52      public_prod_redis_03
+52.1.176.47     public_prod_redis_04
+
+#[OLD AWS Redis Private IPs]
+172.30.1.141    redis01.tradesy.com prod_redis_01
+172.30.1.24     redis02.tradesy.com prod_redis_02
+172.30.1.150    redis03.tradesy.com prod_redis_03
+172.30.1.100    redis04.tradesy.com prod_redis_04
+
+#[AWS Sitemaps Public IPs]
+52.6.237.187    public_prod_sitemaps
+
+#[AWS Sitemaps Private IPs]
+172.30.1.244    prod_sitemaps
+
+#[AWS Ansible Public IPs]
+54.174.233.40   ansible.tradesy.com public_prod_ansible 
+
+#[AWS Ansible Private IPs]
+172.30.3.124    prod_ansible
+
+#[AWS Blog Public IPs]
+54.165.201.61   public_prod_blog
+
+
+# Peak Data Center Server Entries
+# -------------------------------
+
+#[AWS QA Public IPs]
+#### These are now DNS'd.  Use qa1.tradey.com + qa1-api.tradesy.com through qa4 
+
+#[Peak VPN Public IP]
+204.11.218.143  vpn
+
+#[Peak Pipeline Public IPs]
+204.11.218.171 pipeline01.tradesy.com pipeline01
+204.11.218.172 pipeline02.tradesy.com pipeline02
+204.11.218.167 pipeline03.tradesy.com pipeline03
+204.11.218.168 pipeline04.tradesy.com pipeline04
+204.11.218.169 pipeline05.tradesy.com pipeline05
+
+# END DYNAMIC BLOCK - DO NOT EDIT MANUALLY
+# BEGIN section for OpenVPN Client SSL sites
+127.94.0.1	client.openvpn.net
+127.94.0.2	openvpn-client.vpn.tradesy.com
+# END section for OpenVPN Client SSL sites

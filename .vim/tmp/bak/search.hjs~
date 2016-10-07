@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>{{ title }}</h1>
+    <p>Welcome to {{ title }}</p>
+    <p>Search page!</p>
+    {{#in_dev}} 
+      We are currently in development, but stay tuned for more info!
+    {{/in_dev}}
+    <form id="search" onsubmit="return false;">
+      <input type="text" name="q">
+      <input type="submit" value="Search!">
+    </form>
+  </body>
+  <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('input[type="submit"]', '#search').click(function(){
+      });
+    });
+  </script>
+</html>

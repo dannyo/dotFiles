@@ -1,0 +1,164 @@
+var mongodb = require('mongodb');
+var MongoClient = require('mongodb').MongoClient; 
+var Db = require('mongodb').Db;
+var Connection = require('mongodb').Connection;
+var Server = require('mongodb').Server;
+var BSON = require('mongodb').BSON;
+var ObjectID = require('mongodb').ObjectID;
+var environment = process.env.NODE_ENV || 'dev';
+var collectionName = require('./config/database')[environment].collectionName;
+
+
+
+//var mongoose = require('mongoose');
+//var environment = process.env.NODE_ENV || 'dev';
+//var configDB = require('./config/database.js')[environment];
+
+//// configuration ===============================================================
+//mongoose.connect(configDB.url); // connect to our database
+
+RecordProvider = function(host, port) {
+    //this.db= new Db(collectionName, new Server(host, port, {auto_reconnect: true}, {}));
+    //this.db.open(function(err,data){
+    //if(data){
+    //data.authenticate('heroku_app2712853', 'v5haenuif1eg3248fqip3nl2ov',function(err2,data2){
+    //if(data2){
+    //console.log("Database opened");
+    //}
+    //else{
+    //console.log(err2);
+    //}
+    //});
+    //}
+    //else{
+    //console.log(err);
+    //}
+    //}); 
+    //  this.db.open(function(){});
+
+    // For long running applictions it is often prudent to enable keepAlive. Without it,
+    // after some period of time you may start to see "connection closed" errors for what 
+    // seems like no reason.
+
+};
+
+
+RecordProvider.prototype.getCollection= function(callback) {
+    //this.db.authenticate('user', 'password#1', function (err, client){
+    //if(client) {
+    //
+    var connectionString = "mongodb://heroku_app2712853:v5haenuif1eg3248fqip3nl2ov@ds041178.mongolab.com:41178/heroku_app2712853";
+    var dbOptions = {
+            server:{
+                'auto_reconnect': true,
+                'poolSize': 20,
+                socketOptions: {keepAlive: 1}  
+            }
+        };
+    MongoClient.connect(connectionString, dbOptions, function(err, db) {
+        if(err){
+            console.log(err);            
+        }
+        db.collection('records', function(error, record_collection) {
+            if( error ) callback(error);
+            else callback(null, record_collection);
+        });
+    });
+
+    //} else {
+    //console.log('failed to authenticate: ' + err); 
+    //}
+    //});
+};
+
+RecordProvider.prototype.findAll = function(callback) {
+    this.getCollection(function(error, record_collection) {
+        if( error ) callback(error)
+        else {
+            record_collection.find().toArray(function(error, results) {
+                if( error ) callback(error)
+                else callback(null, results)
+            });
+        }
+    });
+};
+
+//RecordProvider.prototype.findUserRecords = function(userId,callback) {
+//console.log('got in here');
+//console.log(userId);
+//this.getCollection(function(error, record_collection) {
+//if( error ) callback(error)
+//else {
+//record_collection.find({_userId: userId}).toArray(function(error, results) {
+//if( error ) callback(error)
+//else callback(null, results)
+//});
+//}
+//});
+//};
+RecordProvider.prototype.findUserRecords = function(callback) {
+    this.getCollection(function(error, record_collection) {
+        if( error ) callback(error)
+        else {
+            console.log(record_collection);
+            record_collection.find({}).toArray(function(error, results) {
+                //if( error ) callback(error)
+                //else callback(null, results)
+                if(error) {console.log("error: " + error);} else {
+                    console.log('success!');
+                    callback(null, results);
+                }
+            });
+        }
+    });
+};
+
+
+RecordProvider.prototype.findById = function(id, callback) {
+    this.getCollection(function(error, record_collection) {
+        if( error ) callback(error)
+        else {
+            record_collection.findOne({_id: record_collection.db.bson_serializer.ObjectID.createFromHexString(id)}, function(error, result) {
+                if( error ) callback(error)
+                else callback(null, result)
+            });
+        }
+    });
+};
+
+RecordProvider.prototype.save = function(records, callback) {
+    this.getCollection(function(error, record_collection) {
+        if( error ) callback(error)
+        else {
+            if( typeof(records.length)=="undefined")
+                records = [records];
+
+            for( var i =0;i< records.length;i++ ) {
+                record = records[i];
+                record.created_at = new Date();
+                if( record.comments === undefined ) record.comments = [];
+                for(var j =0;j< record.comments.length; j++) {
+                    record.comments[j].created_at = new Date();
+                }
+            }
+
+            record_collection.insert(records, function() {
+                callback(null, records);
+            });
+        }
+    });
+};
+
+RecordProvider.prototype.delete = function(recordId, callback) {
+    this.getCollection(function(error, record_collection) {
+        if( error ) callback(error)
+        else {
+            record_collection.remove({_id: new mongodb.ObjectID(recordId)}, function(err, result) {
+                //res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });
+                callback(null, recordId);
+            }); 
+        }
+    });
+};
+
+exports.RecordProvider = RecordProvider;

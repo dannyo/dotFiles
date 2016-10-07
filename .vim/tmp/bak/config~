@@ -1,0 +1,25 @@
+# vagrant
+Host 3.3.3.* vagrant
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null
+ServerAliveInterval 60
+User vagrant
+Hostname dev.tradesy.com
+IdentityFile ~/Projects/tradesy-core/vagrant-virtualbox/.vagrant/machines/default/virtualbox/private_key
+
+# vagrant
+Host 54.241.205.37 
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null
+ServerAliveInterval 60
+User code-deploy
+Hostname 54.241.205.37 
+IdentityFile ~/.ssh/code-deploy.key
+
+Host 54.219.13.196
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null
+ServerAliveInterval 60
+User ec2-user
+Hostname 54.219.13.196
+IdentityFile ~/.ssh/code-deploy.key

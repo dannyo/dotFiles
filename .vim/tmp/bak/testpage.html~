@@ -1,0 +1,22 @@
+<html>
+    <title>This is the title</title>
+    <body>
+        <a href="http://www.google.com">Click this for google</a>
+        <i> <b>Hello</b></i>
+        <button>hello</button></br>
+        <span>Username: </span><input/></br>
+        <span>Password: </span><input/>
+        <h1>This is header 1 size</h1>
+        <h2>This is header 2 size</h2>
+
+        <ol>
+            <li>something1</li>
+            <li>something2</li>
+            <li>something3</li>
+            <li>something4</li>
+            <li>something5</li>
+            <li>something6</li>
+        </ol>
+        <img src="/Users/dannyorh/Desktop/2013-04-20 13.42.31.jpg">
+    </body>
+</html>

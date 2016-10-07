@@ -1,0 +1,30 @@
+---
+aws_provision_config:
+  keypair: "Danny"
+  number: "1" 
+  image: "ami-45ab792e"
+  ebs_optimized: no
+  security_group: "sg-e0c36184"
+  instance_name: "generic"
+  region: "us-east-1"
+  zone: "us-east-1b"
+  vpc_subnet_id: "subnet-f65bb3af"
+  public_ip: "yes"
+  # placement_group: "DEV"
+  type: "t2.medium"
+  wait: "yes"
+  instance_tags: {
+    "PROD": false,
+    "DEV": true,
+    "Name": "PERFORMANCE JMETER",
+    "1B": true,
+  }   
+  monitoring: "no"
+  wait_timeout: 300 
+  volumes: [{  
+    "device_name": "/dev/sda1",
+    "volume_size": 40,
+    "delete_on_termination": true,
+    "device_type": gp2,
+    }   
+  ] #object (dict) inside an array since  it is a list of volumes with /dev/sda1 being the root partition

@@ -1,0 +1,17 @@
+
+/*
+ * Search page
+ */
+
+exports.search = function(req, res){
+  res.render('search', 
+	{ 
+	  title: 'GB Search',
+	  in_dev: true
+	}
+  );
+};
+
+var blahblah = function(req, res){
+    console.log('hello');
+}

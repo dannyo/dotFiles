@@ -1,0 +1,58 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	new file:   envVariables/apps.js
+#	new file:   persistingData/app.js
+#	new file:   persistingData/file.txt
+#
+diff --git a/envVariables/apps.js b/envVariables/apps.js
+new file mode 100644
+index 0000000..ccb2f87
+--- /dev/null
++++ b/envVariables/apps.js
+@@ -0,0 +1 @@
++console.log(process.env.SECRET_KEY);
+diff --git a/persistingData/app.js b/persistingData/app.js
+new file mode 100644
+index 0000000..55679f9
+--- /dev/null
++++ b/persistingData/app.js
+@@ -0,0 +1,27 @@
++//var fs = require('fs'),
++    //data = "Some data I want to write to a file";
++//fs.writeFile('file.txt', data, function (err) {
++    //if(!err) {
++        //console.log('Wrote data to file.txt');
++    //} else {
++        //throw err;
++    //}
++//});
++
++//var fs = require('fs');
++//fs.readFile('file.txt', 'utf8', function (err,data) {
++    //if (!err){
++        //console.log(data);
++    //} else {
++        //throw err;
++    //}
++//});
++var fs = require('fs');
++        fs.readFile('file.txt', 'utf8', function (err, data) {
++          if (!err) {
++            console.log(data);
++          } else {
++            throw err;
++} });
++
++
+diff --git a/persistingData/file.txt b/persistingData/file.txt
+new file mode 100644
+index 0000000..6ed0724
+--- /dev/null
++++ b/persistingData/file.txt
+@@ -0,0 +1 @@
++Some data I want to write to a file

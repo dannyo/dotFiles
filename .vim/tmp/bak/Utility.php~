@@ -1,0 +1,1838 @@
+<?php
+
+namespace Tradesy;
+
+// Misc Common Functions that are used in the webapp and api
+// Misc stuff that will be used in other classes
+
+use Tradesy\infrastructure\context\Environment;
+use Tradesy\repository\Repository;
+
+class Utility
+{
+    const TWO_DOLLARS_IN_CENTS = 200;
+
+    public static $singular_terms = array(
+        'Dresses' => 'Dress',
+        'Tops' => 'Top',
+        'Jeans' => 'Jeans',
+        'Bags' => 'Bag',
+        'Shoes' => 'Shoes',
+        'Bottoms' => 'Bottoms',
+        'Intimates' => 'Intimates',
+        'Maternity' => 'Maternity Clothes',
+        'Accessories' => 'Accessory',
+        'Suiting' => 'Suit',
+        'Bridesmaid Dresses' => 'Bridesmaid Dress',
+        'Casual Dresses (Short)' => 'Casual Dress (Short)',
+        'Casual Dresses (Maxi)' => 'Casual Dress (Maxi)',
+        'Cocktail Dresses' => 'Cocktail Dress',
+        'Formal Dresses' => 'Formal Dress',
+        'Night Out Dresses' => 'Night Out Dress',
+        'Wedding Dresses' => 'Wedding Dress',
+        'Work/Office Dresses' => 'Work/Office Dress',
+        'Blouses' => 'Blouse',
+        'Button-Downs' => 'Button-Down',
+        'Tee Shirts' => 'Tee Shirt',
+        'Tank Tops & Camis' => 'Tank Top',
+        'Tank Tops' => 'Tank Top',
+        'Sweaters & Pullovers' => 'Sweater',
+        'Sweatshirts & Hoodies' => 'Hoodie',
+        'Tunics' => 'Tunic',
+        'Cardigans' => 'Cardigan',
+        'Halter Tops' => 'Halter Top',
+        'Trouser/Wide Leg Jeans' => 'Wide Leg Jeans',
+        'Cross Body Bags' => 'Cross Body Bag',
+        'Clutches' => 'Clutch',
+        'Hobos' => 'Hobo',
+        'Satchels' => 'Satchel',
+        'Shoulder Bags' => 'Shoulder Bag',
+        'Totes' => 'Tote',
+        'Backpacks' => 'Backpack',
+        'Beach Bags' => 'Beach Bag',
+        'Weekend/Travel Bags' => 'Weekend/Travel Bag',
+        'Baby & Diaper Bags' => 'Baby & Diaper Bag',
+        'Laptop Bags' => 'Laptop Bag',
+        'Wristlets' => 'Wristlet',
+        'Baguettes' => 'Baguette',
+        'Boots & Booties' => 'Boots',
+        'Mules & Clogs' => 'Clogs',
+        'Blazers' => 'Blazer',
+        'Jackets' => 'Jacket',
+        'Coats' => 'Coat',
+        'Vests' => 'Vest',
+        'Ponchos & Capes' => 'Cape',
+        'Capris' => 'Capri',
+        'Skirts' => 'Skirt',
+        'Scarves' => 'Scarf',
+        'Necklaces' => 'Necklace',
+        'Rings' => 'Ring',
+        'Charms' => 'Charm',
+        'Watches' => 'Watch',
+        'Scarves & Wraps' => 'Wrap',
+        'Wallets' => 'Wallet'
+    );
+
+    /**
+     * Returns a date-time string with microseconds
+     *
+     * @return string
+     */
+    public static function getDateTimeString()
+    {
+        $microDate = microtime();
+        $dateParts = explode(" ", $microDate);
+
+        return date("Y-m-d H:i:s", $dateParts[1]) . '.' . substr($dateParts[0], 2, 3);
+    }
+
+    /**
+     * Attempts to connect to MySQL using mysqli
+     *
+     * @return \mysqli|null
+     */
+    public static function mysql_connect()
+    {
+        $dbh = null;
+        try {
+            if (self::isProd()) {
+                Log::info(
+                    LogFiles::PDO_CONNECTIONS,
+                    'Utility::mysql_connect()'
+                );
+            }
+        } catch (Exception $e) {
+
+        }
+
+        $dbh = new \mysqli(
+            Constants::MYSQL_CONNECTION,
+            Constants::MYSQL_USER,
+            Constants::MYSQL_PASSWORD,
+            Constants::MYSQL_DB
+        );
+
+        if ($dbh->connect_error) {
+            throw new \Exception('Utility::mysql_connect() connection failure');
+        }
+
+        return $dbh;
+    }
+
+    /**
+     * Attempts to connect to MySQL master using PDO
+     *
+     * @return null|TPdo
+     */
+    public static function mysql_PDO_connect()
+    {
+        $dbh = null;
+        try {
+            if (self::isProd()) {
+                Log::info(
+                    LogFiles::PDO_CONNECTIONS,
+                    'Utility::mysql_PDO_connect()'
+                );
+            }
+        } catch (Exception $e) {
+        }
+
+        $dbh = new TPdo(
+            'mysql:host=' . Constants::MYSQL_CONNECTION . ';dbname=' . Constants::MYSQL_DB,
+            Constants::MYSQL_USER,
+            Constants::MYSQL_PASSWORD,
+            array(
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
+            )
+        );
+
+        return $dbh;
+    }
+
+    /**
+     * Attempts to connect to MySQL slave using PDO
+     *
+     * @return null|TPdo
+     */
+    public static function mysql_slave_PDO_connect()
+    {
+        $dbh = null;
+        try {
+            if (self::isProd()) {
+                Log::info(
+                    LogFiles::PDO_CONNECTIONS,
+                    'Utility::mysql_slave_PDO_connect()'
+                );
+            }
+        } catch (Exception $e) {
+        }
+
+        $dbh = new TPdo(
+            'mysql:host=' . Constants::MYSQL_SLAVE_CONNECTION . ';dbname=' . Constants::MYSQL_DB,
+            Constants::MYSQL_USER,
+            Constants::MYSQL_PASSWORD,
+            array(
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
+            )
+        );
+
+        return $dbh;
+    }
+
+    /**
+     * Attempts to connect to MySQL master readonly using PDO
+     *
+     * @return null|TPdo
+     */
+    public static function mysql_readonly_PDO_connect()
+    {
+        $dbh = null;
+        try {
+            if (self::isProd()) {
+                Log::info(
+                    LogFiles::PDO_CONNECTIONS,
+                    'Utility::mysql_readonly_PDO_connect()'
+                );
+            }
+        } catch (Exception $e) {
+        }
+
+        $dbh = new TPdo(
+            'mysql:host=' . Constants::MYSQL_CONNECTION . ';port=' . Constants::MYSQL_READONLY_PORT . ';dbname=' . Constants::MYSQL_DB,
+            Constants::MYSQL_READONLY_USER,
+            Constants::MYSQL_READONLY_PASSWORD,
+            array(
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
+            )
+        );
+
+        return $dbh;
+    }
+
+    public static function redis_connect()
+    {
+        $attempt_count = 0;
+        $try = true;
+        while ($try) {
+            try {
+
+                $redisConnection = self::isProd()
+                    ? Constants::$REDIS_CLUSTER_PROD_CONNECTION
+                    : Constants::$REDIS_CLUSTER_DEV_CONNECTION;
+
+                shuffle($redisConnection);
+                $redisCluster = new \RedisCluster('redisCluster', $redisConnection, constants::REDIS_CONNECT_TIMEOUT, Constants::REDIS_READ_TIMEOUT);
+
+                return self::isProd()
+                    ? $redisCluster
+                    : new RedisDecorator($redisCluster);
+
+            } catch (\Exception $e) {
+                Log::error(
+                    LogFiles::APPLICATION_LOG,
+                    "Redis Connection Attempt Failed attempt: $attempt_count" . $e->getMessage()
+                );
+                if (++$attempt_count > Constants::MAX_REDIS_CONNECTION_TRIES) {
+                    $try = false;
+                    Log::error(
+                        LogFiles::APPLICATION_LOG,
+                        "Redis Max Failed Connection Attempts: $attempt_count" . $e->getMessage(),
+                        $e->getTrace()
+                    );
+                    throw $e;
+                } else {
+                    usleep(Constants::REDIS_FAILOVER_RETRY_TIME);
+                }
+            }
+        }
+    }
+
+    public static function solr_connect()
+    {
+        $options = array(
+            'hostname' => Constants::SOLR_HOST,
+            'login' => Constants::SOLR_USER,
+            'password' => Constants::SOLR_PASSWORD,
+            'port' => Constants::SOLR_PORT
+        );
+        $solrClient = new \SolrClient($options);
+        $solrQuery = new \SolrQuery();
+
+        return array(
+            'client' => $solrClient,
+            'query' => $solrQuery
+        );
+    }
+
+    public static function getUserIPAddr()
+    {
+        $contender_1 = substr($_SERVER ["HTTP_X_FORWARDED_FOR"], 0, stripos($_SERVER ["HTTP_X_FORWARDED_FOR"], ","));
+        $contender_2 = $_SERVER ["HTTP_X_FORWARDED_FOR"];
+        $contender_3 = $_SERVER ["REMOTE_ADDR"];
+
+        if ($contender_1) {
+            return $contender_1;
+        } elseif ($contender_2) {
+            return $contender_2;
+        } else {
+            return $contender_3;
+        }
+    }
+
+    public static function mini_lamhash($str)
+    {
+        $len = 32;
+        $tmp = strlen($str);
+        // slows down quite a bit
+        while ($tmp < $len) {
+            $tmp++;
+            $str .= "_"; // fill the rest of the string
+        }
+
+        $r [0] = ord($str [0]); // + ord($str[1]) + 3 * ord($str[2]) + 2 * ord($str[3]) + 3 * ord($str[4]) + ord($str[5]) + 3 * ord($str[6]) + 2 * ord($str[7]) + 3 * ord($str[30]) + 3 * ord($str[31]);
+        $r [1] = 2 * ord($str [1]); // + ord($str[27]) + 3 * ord($str[25]) + 2 * ord($str[24]) + 3 * ord($str[23]) + ord($str[22]) + 3 * ord($str[21]) + 2 * ord($str[19]) + 3 * ord($str[18]) + 3 * ord($str[16]);
+        for ($i = 2; $i < strlen($str); $i++) {
+            $r [$i] = ord($str [$i]) + $r [0] + $r [1];
+            // $r[$i] %= 1024;
+        }
+        // $c = range(64, 128);
+        $c = array(
+            7,
+            19,
+            23,
+            43,
+            29
+        ); // key must be filled with non-even numbers to maintain 1-1
+        for ($i = 0; $i < sizeof($r); $i++) {
+            $r [$i] *= $c [($i % 5)];
+            // if($r[$i] > 0)
+            // echo $i . " :: " . $r[$i] . " <br/>";
+            $r [$i] %= 32;
+        }
+        $display = "";
+        for ($i = 0; $i < sizeof($r); $i++) {
+            $display .= self::mini_decoder_ring($r [$i]);
+        }
+
+        return $display;
+    }
+
+    public static function mini_decoder_ring($code)
+    {
+        $decoder = array(
+            'a',
+            'b',
+            'c',
+            'd',
+            'e',
+            'f',
+            'g',
+            'h',
+            'i',
+            'j',
+            'k',
+            'l',
+            'm',
+            'n',
+            'o',
+            'p',
+            'q',
+            'r',
+            's',
+            't',
+            'u',
+            'v',
+            'w',
+            'x',
+            'y',
+            'z',
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6'
+        );
+
+        return $decoder [$code];
+    }
+
+    public static function lamhash($str)
+    {
+        $len = 64;
+        $tmp = strlen($str);
+        // slows down quite a bit
+        while ($tmp < $len) {
+            $tmp++;
+            $str .= "g"; // fill the rest of the string
+        }
+
+        $r [0] = ord($str [4]);
+        $r [1] = ord($str [1]);
+        $r [2] = ord($str [3]);
+        $r [3] = ord($str [0]);
+        $r [4] = ord($str [2]);
+        $r [5] = ord($str [7]);
+        $r [6] = ord($str [5]);
+        $r [7] = ord($str [6]);
+        for ($i = 2; $i < strlen($str); $i++) {
+            $r [$i] = ord($str [$i]) + $r [0] + $r [1] - $r [2] - $r [3] + $r [4];
+        }
+        // $c = range(64, 128);
+        $c = array(
+            7,
+            19,
+            23,
+            43,
+            29
+        ); // key must be filled with non-even numbers to maintain 1-1
+        for ($i = 0; $i < $len; $i++) {
+            $r [$i] *= $c [($i % 5)];
+            $r [$i] %= 64;
+        }
+        $display = "";
+        for ($i = 0; $i < sizeof($r); $i++) {
+            if ($r [$i] >= 0) {
+                $display .= self::decoder_ring($r [$i]);
+            }
+        }
+
+        return $display;
+    }
+
+    public static function decoder_ring($code)
+    {
+        $decoder = array(
+            'a',
+            'b',
+            'c',
+            'd',
+            'e',
+            'f',
+            'g',
+            'h',
+            'i',
+            'j',
+            'k',
+            'l',
+            'm',
+            'n',
+            'o',
+            'p',
+            'q',
+            'r',
+            's',
+            't',
+            'u',
+            'v',
+            'w',
+            'x',
+            'y',
+            'z',
+            '1',
+            'A',
+            '2',
+            'B',
+            '3',
+            'D',
+            '4',
+            'E',
+            '5',
+            'F',
+            '6',
+            'H',
+            '8',
+            'I',
+            '9',
+            'J',
+            '0',
+            'K',
+            'L',
+            'M',
+            'N',
+            'O',
+            'W',
+            'V',
+            'U',
+            'T',
+            'S',
+            'R',
+            'Q',
+            'P',
+            'X',
+            'Y',
+            'Z',
+            ']',
+            '*',
+            '|',
+            '[',
+            '$'
+        );
+
+        return $decoder [$code];
+    }
+
+    public static function convert_ascii($string, $ascii_only = true)
+    {
+        // Replace Single Curly Quotes
+        $search [] = chr(226) . chr(128) . chr(152);
+        $replace [] = "'";
+        $search [] = chr(226) . chr(128) . chr(153);
+        $replace [] = "'";
+
+        // Replace Smart Double Curly Quotes
+        $search [] = chr(226) . chr(128) . chr(156);
+        $replace [] = '"';
+        $search [] = chr(226) . chr(128) . chr(157);
+        $replace [] = '"';
+
+        // Replace En Dash
+        $search [] = chr(226) . chr(128) . chr(147);
+        $replace [] = '--';
+
+        // Replace Em Dash
+        $search [] = chr(226) . chr(128) . chr(148);
+        $replace [] = '---';
+
+        // Replace Bullet
+        $search [] = chr(226) . chr(128) . chr(162);
+        $replace [] = '*';
+
+        // Replace Middle Dot
+        $search [] = chr(194) . chr(183);
+        $replace [] = '*';
+
+        // Replace Ellipsis with three consecutive dots
+        $search [] = chr(226) . chr(128) . chr(166);
+        $replace [] = '...';
+
+        // Apply Replacements
+        $string = str_replace($search, $replace, $string);
+
+        // Remove any non-ASCII Characters
+        // Modified to keep newline and carriage return
+        if ($ascii_only) {
+            $string = preg_replace("/[^\x0A\x0D\x20-\x7E]/", "", $string);
+        }
+
+        return $string;
+    }
+
+    public static function slugify($s)
+    {
+        $s = self::clearUTF($s);
+        $s = str_replace('&', '-and-', strtolower($s));
+        $s = preg_replace("/(\s+|\`|\')/", "-", $s);
+        $s = preg_replace("/[^a-z0-9\-]/", "", $s);
+        $s = preg_replace("/\-{2,}/", "-", $s);
+
+        return $s;
+    }
+
+    public static function singularize($cat, $style = false)
+    {
+        $exceptions = array(
+            'Activewear',
+            'Intimates',
+            'Swim',
+            'Maternity',
+            'Accessories',
+            'Suiting'
+        );
+        if (($style && in_array($cat, $exceptions)) || $style == false) {
+            $word = $cat;
+        } else {
+            $word = $style;
+        }
+
+        if (isset(self::$singular_terms[$word])) {
+            return self::$singular_terms[$word];
+        } else {
+            return $cat;
+        }
+    }
+
+    public static function random_sha256_hash()
+    {
+        return hash("sha256", base64_encode(openssl_random_pseudo_bytes(256)));
+    }
+
+    /*
+     * https://gist.github.com/marcoarment/1053158
+     */
+    const DEFAULT_WORK_FACTOR = 8;
+
+    public static function bcrypt_hash($password, $work_factor = 0)
+    {
+        if (version_compare(PHP_VERSION, '5.3') < 0) {
+            throw new Exception('Bcrypt requires PHP 5.3 or above');
+        }
+
+        if (!function_exists('openssl_random_pseudo_bytes')) {
+            throw new Exception('Bcrypt requires openssl PHP extension');
+        }
+
+        if ($work_factor < 4 || $work_factor > 31) {
+            $work_factor = self::DEFAULT_WORK_FACTOR;
+        }
+
+        $salt = '$2a$' . str_pad($work_factor, 2, '0',
+                STR_PAD_LEFT) . '$' . substr(strtr(base64_encode(openssl_random_pseudo_bytes(16)), '+', '.'), 0, 22);
+
+        return crypt($password, $salt);
+    }
+
+    public static function bcrypt_check($password, $stored_hash)
+    {
+        if (version_compare(PHP_VERSION, '5.3') < 0) {
+            throw new Exception('Bcrypt requires PHP 5.3 or above');
+        }
+
+        if (self::bcrypt_is_legacy_hash($stored_hash)) {
+            return false;
+        }
+
+        return crypt($password, $stored_hash) == $stored_hash;
+    }
+
+    public static function bcrypt_is_legacy_hash($hash)
+    {
+        return substr($hash, 0, 4) != '$2a$';
+    }
+
+    /**
+     * Returns true if the current environment is stage
+     *
+     * @return bool
+     */
+    public static function isStage()
+    {
+        return Environment::isStage();
+    }
+
+    /**
+     * Returns true if the current environment is either stage or production
+     *
+     * @return bool
+     */
+    public static function isProd()
+    {
+        return Environment::isProd();
+    }
+
+    /**
+     * Returns true if the current environment is dev or ci
+     *
+     * @return bool
+     */
+    public static function isDev()
+    {
+        return Environment::isDev();
+    }
+
+    /**
+     * Returns true if the current environment is ci or qa
+     *
+     * @return bool
+     */
+    public static function isQA()
+    {
+        return Environment::isQA();
+    }
+
+    public static function getBrandBucket($brand)
+    {
+        $brand_slug = Utility::slugify($brand);
+
+        $stylefeedbase = new StyleFeedBase();
+
+        $name_to_id_map = array(
+            0 => array(
+                "slug" => "luxury-brands",
+                "display_name" => "Luxury Brands"
+            ),
+            1 => array(
+                "slug" => "jet-set-style",
+                "display_name" => "Jet-Set Style"
+            ),
+            2 => array(
+                "slug" => "cheap-n-chic",
+                "display_name" => "Cheap 'N Chic"
+            ),
+            3 => array(
+                "slug" => "cutting-edge",
+                "display_name" => "Cutting Edge"
+            ),
+            4 => array(
+                "slug" => "american-classics",
+                "display_name" => "American Classics"
+            ),
+            5 => array(
+                "slug" => "lifestyle-favorites",
+                "display_name" => "Lifestyle Favorites"
+            )
+        );
+
+        if (in_array($brand_slug, $stylefeedbase->getLuxuryLabels())) {
+            return $name_to_id_map [0];
+        } elseif (in_array($brand_slug, $stylefeedbase->getJetSetStyleBrands())) {
+            return $name_to_id_map [1];
+        } elseif (in_array($brand_slug, $stylefeedbase->getCuttingEdgeFashionBrands())) {
+            return $name_to_id_map [3];
+        } elseif (in_array($brand_slug, $stylefeedbase->getCheapNChicBrands())) {
+            return $name_to_id_map [2];
+        } elseif (in_array($brand_slug, $stylefeedbase->getAmericanClassicsBrands())) {
+            return $name_to_id_map [4];
+        } elseif (in_array($brand_slug, $stylefeedbase->getLifeStyleMallBrands())) {
+            return $name_to_id_map [5];
+        } else {
+            return array(
+                "slug" => "other",
+                "display_name" => "other"
+            );
+        }
+    }
+
+    public static function requestRedisLock($key, $time)
+    {
+        $redis = TRedis::connect()->db;
+        if ($redis->setnx($key, 1)) {
+            $redis->expire($key, $time);
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function removeRedisLock($key)
+    {
+        $redis = TRedis::connect()->db;
+        $redis->del($key);
+    }
+
+    public static function generateRandomString($length, $characters = "")
+    {
+        if (!$characters) {
+            $characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        }
+        $string = "";
+        for ($i = 0; $i < $length; $i++) {
+            $string .= $characters [rand(0, strlen($characters) - 1)];
+        }
+
+        return $string;
+    }
+
+    public static function getTrueIPAddr()
+    {
+        $contender_1 = substr($_SERVER ["HTTP_X_FORWARDED_FOR"], 0, stripos($_SERVER ["HTTP_X_FORWARDED_FOR"], ","));
+        $contender_2 = $_SERVER ["HTTP_X_FORWARDED_FOR"];
+        $contender_3 = $_SERVER ["REMOTE_ADDR"];
+
+        if ($contender_1) {
+            return $contender_1;
+        } elseif ($contender_2) {
+            return $contender_2;
+        } else {
+            return $contender_3;
+        }
+    }
+
+    public static function getServerIPAddress()
+    {
+        $ifconfig = shell_exec('/sbin/ifconfig');
+        preg_match('/inet addr:([\d\.]+)/', $ifconfig, $match);
+
+        return $match[1];
+    }
+
+    /**
+     * Return the url of the image mapper server. Currently it only includes dev (as well as QA and CI servers),
+     * and in future we could potentially include prod servers if the pattern is fixed.
+     * @return bool|string
+     */
+    public static function getDevImageMapperServerUrl()
+    {
+        // when called within web app
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            if (preg_match('/(?P<domain>^.+)?.tradesy.com/', $_SERVER['HTTP_HOST'], $matches) === 1) {
+                $domain = $matches['domain'];
+                if (substr($domain, -4) === '-api') {
+                    $domain = substr($domain, 0, sizeof($domain) - 5);
+                } elseif (substr($domain, -8) === '-utility') {
+                        $domain = substr($domain, 0, sizeof($domain) - 9);
+                } elseif (substr($domain, -13) === '-image-mapper') {
+                    $domain = substr($domain, 0, sizeof($domain)-14);
+                }
+                return 'https://' . $domain . Constants::IMAGE_MAPPER_SUFFIX . '.tradesy.com';
+            } else {
+                Log::error(LogFiles::APPLICATION_LOG, 'HTTP_HOST is not a sub-domain of tradesy.com: ' . $_SERVER['HTTP_HOST']);
+                return false;
+            }
+        }
+        // when called within cron scripts running on DEV/QA/CI machines, there is no reliable way to get the right
+        // image mapper server name
+        else {
+            return 'https://dev-image-mapper.tradesy.com';
+        }
+    }
+
+    /**
+     * Fix the image mapper url of the image_cat entry in item data because the one populated by cron scripts
+     * in DEV/QA/CI lacks server name
+     * @param $item_data
+     */
+    public static function fixImageCat(&$item_data)
+    {
+        if (isset($item_data['image_cat'][0]) && $item_data['image_cat'][0] === '/') {
+            $item_data['image_cat'] = Utility::getDevImageMapperServerUrl() . $item_data['image_cat'];
+        }
+    }
+
+    /**
+     * Fix the image mapper url of the image_thumb entry in item data because the one populated by cron scripts
+     * in DEV/QA/CI lacks server name
+     * @param $item_data
+     */
+    public static function fixImageThumb($item_data)
+    {
+        if (isset($item_data['image_thumb'][0]) && $item_data['image_thumb'][0] === '/') {
+            return Utility::getDevImageMapperServerUrl() . $item_data['image_thumb'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Determines whether the request's IP is from one of the internal office IPs.
+     *
+     * @return bool
+     */
+    public static function isInternalNetwork()
+    {
+        $internal_ips = array(
+            '66.193.199.54',
+            '69.39.200.18',
+        );
+
+        return in_array(self::getTrueIPAddr(), $internal_ips);
+    }
+
+    public static function queueGoogleShoppingUpdate($id, $type)
+    {
+        if ($type != 'user' && $type != 'item') {
+            return false;
+        }
+
+        $connection = TMysql::connect()->db;
+        if ($type == 'user') {
+            $gshopping_sql = "INSERT INTO gshopping_queue (type, user_id) VALUES ('user', :id)";
+        } else {
+            $gshopping_sql = "INSERT INTO gshopping_queue (type, item_id) VALUES ('item', :id)";
+        }
+
+        $command = $connection->prepare($gshopping_sql);
+        $command->bindParam(':id', $id, \PDO::PARAM_INT);
+
+        return $command->execute();
+    }
+
+    public static function psedoUnslugify($s)
+    {
+        $hardcoded_exception_array = array(
+            "casual-dresses-short" => "Casual Dresses (Short)",
+            "casual-dresses-maxi" => "Casual Dresses (Maxi)",
+            "workoffice-dresses" => "Work/Office Dresses",
+            "button-downs" => "Button-Downs",
+            "tank-tops-and-camis" => "Tank Tops & Camis",
+            "sweaters-and-pullovers" => "Sweaters & Pullovers",
+            "sweatshirts-and-hoodies" => "Sweatshirts & Hoodies",
+            "trouserwide-leg-jeans" => "Trouser/Wide Leg Jeans",
+            "capricropped-denim" => "Capri/Cropped Denim",
+            "weekendtravel-bags" => "Weekend/Travel Bags",
+            "baby-and-diaper-bags" => "Baby & Diaper Bags",
+            "boots-and-booties" => "Boots & Booties",
+            "mules-and-clogs" => "Mules & Clogs",
+            "puffyski-coats" => "Puffy/Ski Coats",
+            "ponchos-and-capes" => "Ponchos & Capes",
+            "capricropped" => "Capri/Cropped",
+            "minishort" => "Mini/Short",
+            "ski-and-snowboard" => "Ski & Snowboard",
+            "multi-sport" => "Multi-Sport",
+            "full-bikinis" => "Full Bikinis",
+            "one-piece-bathing-suits" => "One-Piece Bathing Suits",
+            "cover-ups-and-sarongs" => "Cover-Ups & Sarongs",
+            "scarves-and-wraps" => "Scarves & Wraps",
+            "rompers-and-jumpsuits" => "Rompers & Jumpsuits",
+            "bridal-jewelry-and-accessories" => "Bridal Jewelry & Accessories",
+            "women-s-wedding-band-sets" => "Women's Wedding Band Sets",
+            "women-s-wedding-bands" => "Women's Wedding Bands",
+            "men-s-wedding-bands" => "Men's Wedding Bands",
+            "bridesmaids-dresses-and-mobs" => "Bridesmaids Dresses & MOBs",
+            "grooms-and-groomsmen" => "Grooms & Groomsmen",
+            "cufflinks-and-studs" => "Cufflinks & Studs",
+            "groomsmens-gifts" => "Groomsmens Gifts",
+            "men-s-jewelry-and-accessories" => "Men's Jewelry and Accessories",
+            "ties-and-bowties" => "Ties & Bowties",
+            "flats" => "Flats",
+            "wedding-invitations-and-paper" => "Wedding Invitations & Paper"
+        );
+
+        if (isset ($hardcoded_exception_array [$s])) {
+            return $hardcoded_exception_array [$s];
+        } else {
+            $s = str_replace("-", ' ', $s);
+            $s = ucwords($s);
+
+            return $s;
+        }
+    }
+
+    public static function getClothingSizeTypes()
+    {
+        return array(
+            "petite" => array(
+                "petite-0-xxs",
+                "petite-2-xs",
+                "petite-4-s",
+                "petite-6-s",
+                "petite-8-m",
+                "petite-10-m",
+                "petite-12-l",
+                "petite-14-l",
+                "petite"
+            ),
+            "plus" => array(
+                "16-xl-plus-0x",
+                "18-xl-plus-0x",
+                "20-plus-1x",
+                "22-plus-2x",
+                "24-plus-2x",
+                "26-plus-3x",
+                "28-plus-3x"
+            )
+        );
+    }
+
+    public static $clothing_size_types = array(
+        "petite" => array(
+            "petite-0-xxs",
+            "petite-2-xs",
+            "petite-4-s",
+            "petite-6-s",
+            "petite-8-m",
+            "petite-10-m",
+            "petite-12-l",
+            "petite-14-l",
+            "petite"
+        ),
+        "plus" => array(
+            "16-xl-plus-0x",
+            "18-xl-plus-0x",
+            "20-plus-1x",
+            "22-plus-2x",
+            "24-plus-2x",
+            "26-plus-3x",
+            "28-plus-3x"
+        )
+    );
+
+    /**
+     * Used to keep track of invalid cached data
+     *
+     * @param string $table
+     * @param integer $pk_id
+     * @param string $updated_field
+     * @param string $updated_field_value
+     */
+    public static function addToInvalidCacheQueue($table, $pk_id, $updated_field = null, $updated_field_value = null)
+    {
+        $redis = TRedis::connect()->db;
+        $set_key = strtolower("invalid_cache:$table");
+
+        // Add the updated field
+        if (!empty($updated_field) && !empty($updated_field_value)) {
+            $redis->sAdd("$set_key:$updated_field", $updated_field_value);
+        }
+
+        // Get the column values for the given PK ID
+        $Repository = Service::get(Repository::class);
+        $record = $Repository->getRecordByTableAndId($table, $pk_id);
+        if (isset($record[0]) && !empty($record[0])) {
+            foreach ($record[0] as $key => $val) {
+                if (!empty($val)) {
+                    $redis->sAdd("$set_key:$key", $val);
+                }
+            }
+        }
+    }
+
+    public static function GetXMLElement($element_name, $xml, $content_only = true)
+    {
+        if ($xml == false) {
+            return false;
+        }
+        $found = preg_match(
+            '#<' . $element_name . '(?:\s+[^>]+)?>(.*?)' . '</' . $element_name . '>#s',
+            $xml,
+            $matches
+        );
+        if ($found != false) {
+            if ($content_only) {
+                return $matches [1]; // ignore the enclosing tags
+            } else {
+                return $matches [0]; // return the full pattern match
+            }
+        }
+
+        // No match found: return false.
+        return false;
+    }
+
+    public static function saveToS3($rel_path, $base64_image = false)
+    {
+        try {
+            $s3 = \Aws\Common\Aws::factory(array(
+                'key' => Constants::AWS_KEY,
+                'secret' => Constants::AWS_SECRET
+            ))->get('s3');
+
+            $s3Info = self::getS3InfoByFileExt($rel_path);
+
+            if ($base64_image) {
+                $s3->putObject(array(
+                    'Bucket' => $s3Info['bucket'],
+                    'Key' => $rel_path,
+                    'Body' => $base64_image,
+                    'ACL' => \Aws\S3\Enum\CannedAcl::PUBLIC_READ,
+                    'command.headers' => array(
+                        'Content-Type' => $s3Info['contentType'],
+                        "Cache-Control" => "max-age=604800"
+                    )
+                ));
+
+                return true;
+            } else {
+                $root_path = !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : "/tmp";
+                $fp = fopen($root_path . $rel_path, 'r');
+                if ($fp) {
+                    $s3->putObject(array(
+                        'Bucket' => $s3Info['bucket'],
+                        'Key' => $rel_path,
+                        'Body' => $fp,
+                        'ACL' => \Aws\S3\Enum\CannedAcl::PUBLIC_READ
+                    ));
+
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+        } catch (\Exception $e) {
+        }
+
+        return false;
+    }
+
+    public static function moveInS3($old_rel_path, $new_rel_path)
+    {
+        if ($old_rel_path != $new_rel_path) {
+            try {
+                $s3 = \Aws\Common\Aws::factory(array(
+                    'key' => Constants::AWS_KEY,
+                    'secret' => Constants::AWS_SECRET
+                ))->get('s3');
+
+                // check bucket
+                if (Utility::isProd()) {
+                    $bucket = "tradesy-item-image-store";
+                } else {
+                    $bucket = "dev-item-image-store";
+                }
+
+                // copy to new location
+                $s3->copyObject(array(
+                    "Bucket" => $bucket,
+                    "Key" => $new_rel_path,
+                    "CopySource" => $bucket . $old_rel_path,
+                    'MetadataDirective' => 'REPLACE',
+                    'ACL' => \Aws\S3\Enum\CannedAcl::PUBLIC_READ,
+                    'command.headers' => array(
+                        'Content-Type' => 'image/jpeg',
+                        "Cache-Control" => "max-age=604800"
+                    )
+                ));
+
+                // delete from old location
+                $s3->deleteObject(array(
+                    "Bucket" => $bucket,
+                    "Key" => $old_rel_path
+                ));
+
+                return true;
+            } catch (Exception $e) {
+            }
+
+        }
+
+        return false;
+    }
+
+    public static function formatS3URL($image_path)
+    {
+        $s3Info = self::getS3InfoByFileExt($image_path);
+        if ($s3Info['assetType'] == 'video') {
+            if (Utility::isProd()) {
+                return "https://videos.tradesy.com" . $image_path;
+            } else {
+                return "https://dev-videos.tradesy.com" . $image_path;
+            }
+        } else {
+            if (Utility::isProd()) {
+                return "https://item1.tradesy.com" . $image_path;
+            } else {
+                return Utility::getDevImageMapperServerUrl(). $image_path;
+            }
+        }
+    }
+
+    public static function formatS3URL_as_relative($real_path)
+    {
+        if (Utility::isProd()) {
+            return str_replace('https://item1.tradesy.com', '', $real_path);
+        } else {
+            return str_replace(Utility::getDevImageMapperServerUrl(), '', $real_path);
+        }
+    }
+
+    public static function getS3InfoByFileExt($filePath)
+    {
+        $fileExt = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        switch ($fileExt) {
+            case "mp4":
+                $contentType = 'video/mp4';
+                break;
+            case "webm":
+                $contentType = 'video/webm';
+                break;
+            case "ogv":
+                $contentType = 'video/ogg';
+                break;
+            case 'tsv':
+                $contentType = "tsv";
+                break;
+            default:
+                $contentType = 'image/jpeg';
+                break;
+        }
+        $assetType = explode("/", $contentType)[0];
+
+        if ($assetType == 'video') {
+            $bucket = Utility::isProd() ? "videos.tradesy.com" : "dev-videos.tradesy.com";
+        } else {
+            if ($assetType == 'tsv') {
+                $bucket = "tradesy-feeds";
+            } else {
+                $bucket = Utility::isProd() ? "tradesy-item-image-store" : "dev-item-image-store";
+            }
+        }
+
+        return array(
+            'contentType' => $contentType,
+            'bucket' => $bucket,
+            'assetType' => $assetType
+        );
+    }
+
+    public static function gets3credentials($type)
+    {
+        if ($type == 'video') {
+            $bucket = Utility::isProd() ? "videos.tradesy.com" : "dev-videos.tradesy.com";
+            $url = Utility::isProd() ? "https://videos.tradesy.com" : "https://s3.amazonaws.com/dev-videos.tradesy.com";
+            $path = '';
+            $region = 's3';
+        } else {
+            $bucket = Utility::isProd() ? "tradesy-item-image-store" : "dev-item-image-store";
+            $url = Utility::isProd() ? "https://item1.tradesy.com" : Utility::getDevImageMapperServerUrl();
+            $path = 'images/';
+            $region = 's3-us-west-1';
+        }
+
+        $rtnArr = array();
+        $rtnArr['bucket'] = $bucket;
+        $rtnArr['url'] = $url;
+        $rtnArr['path'] = $path;
+        $rtnArr['region'] = $region;
+
+        // these can be found on your Account page, under Security Credentials > Access Keys
+        $rtnArr['accessKeyId'] = Constants::AWS_KEY;
+        // $secret = ;
+        // prepare policy
+        $rtnArr['policy'] = base64_encode(json_encode(array(
+            // ISO 8601 - date('c'); generates uncompatible date, so better do it manually
+            'expiration' => date('Y-m-d\TH:i:s.000\Z', strtotime('+1 day')),
+            'conditions' => array(
+                array('bucket' => $rtnArr['bucket']),
+                array('acl' => 'public-read'),
+                array('starts-with', '$key', ''),
+                // for demo purposes we are accepting only images
+                array('starts-with', '$Content-Type', $type . '/'),
+                // Plupload internally adds name field, so we need to mention it here
+                array('starts-with', '$name', ''),
+                // One more field to take into account: Filename - gets silently sent by FileReference.upload() in Flash
+                // http://docs.amazonwebservices.com/AmazonS3/latest/dev/HTTPPOSTFlash.html
+                array('starts-with', '$Filename', ''),
+            )
+        )));
+
+        // sign policy
+        $rtnArr['signature'] = base64_encode(hash_hmac('sha1', $rtnArr['policy'], Constants::AWS_SECRET, true));
+
+        return $rtnArr;
+    }
+
+    public static function getIntitals($word)
+    {
+        $word_parts = explode(" ", trim($word));
+        $initials = "";
+        if ($word_parts) {
+            foreach ($word_parts as $word_part) {
+                $character = strtoupper(substr($word_part, 0, 1));
+                if ($character != ".") {
+                    $initials .= $character;
+                }
+            }
+        }
+
+        return $initials;
+    }
+
+    /**
+     * Determines whether the current request originated from command line.
+     *
+     * @return bool
+     */
+    public static function isCLI()
+    {
+        if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function states($selected = '', $format = 'html')
+    {
+        // state options
+        $states = array(
+            "Alabama" => "AL",
+            "Alaska" => "AK",
+            "Arizona" => "AZ",
+            "Arkansas" => "AR",
+            "California" => "CA",
+            "Colorado" => "CO",
+            "Connecticut" => "CT",
+            "Delaware" => "DE",
+            "District of Columbia" => "DC",
+            "Florida" => "FL",
+            "Georgia" => "GA",
+            "Hawaii" => "HI",
+            "Idaho" => "ID",
+            "Illinois" => "IL",
+            "Indiana" => "IN",
+            "Iowa" => "IA",
+            "Kansas" => "KS",
+            "Kentucky" => "KY",
+            "Louisiana" => "LA",
+            "Maine" => "ME",
+            "Maryland" => "MD",
+            "Massachusetts" => "MA",
+            "Michigan" => "MI",
+            "Minnesota" => "MN",
+            "Mississippi" => "MS",
+            "Missouri" => "MO",
+            "Montana" => "MT",
+            "Nebraska" => "NE",
+            "Nevada" => "NV",
+            "New Hampshire" => "NH",
+            "New Jersey" => "NJ",
+            "New Mexico" => "NM",
+            "New York" => "NY",
+            "North Carolina" => "NC",
+            "North Dakota" => "ND",
+            "Ohio" => "OH",
+            "Oklahoma" => "OK",
+            "Oregon" => "OR",
+            "Pennsylvania" => "PA",
+            "Rhode Island" => "RI",
+            "South Carolina" => "SC",
+            "South Dakota" => "SD",
+            "Tennessee" => "TN",
+            "Texas" => "TX",
+            "Utah" => "UT",
+            "Vermont" => "VT",
+            "Virginia" => "VA",
+            "Washington" => "WA",
+            "West Virginia" => "WV",
+            "Wisconsin" => "WI",
+            "Wyoming" => "WY"
+        );
+
+        switch ($format) {
+            case 'array':
+                $state_options = $states;
+                break;
+            case 'html':
+            default:
+                // state options for shipping
+                $state_options = "<option value=\"\">Select State</option>";
+                foreach ($states as $state => $abbr) {
+                    if ($selected == $abbr) {
+                        $state_options .= "<option value=\"$abbr\" selected=\"selected\">$state</option>";
+                    } else {
+                        $state_options .= "<option value=\"$abbr\">$state</option>";
+                    }
+                }
+        }
+
+        return $state_options;
+    }
+
+    public static function getProcessIds($process_name)
+    {
+        $pids = array();
+        exec("ps aux | grep " . $process_name . " | grep -v grep | grep -v /bin/sh | awk '{print $2}'", $stdout);
+        exec(
+            "ps aux | grep " . __DIR__ . "/" . $process_name . " | grep -v grep | grep -v /bin/sh | awk '{print $2}'",
+            $stdout
+        );
+        foreach ($stdout as $line) {
+            $pids[] = $line;
+        }
+
+        return $pids;
+    }
+
+
+    public static function getNumberOfProcessPerName($process_name)
+    {
+        $pids = array();
+        exec("ps ax | grep " . $process_name . " | grep -v grep | grep -v /bin/sh | awk '{print $1}'", $stdout);
+        foreach ($stdout as $line) {
+            $pids[] = $line;
+        }
+        // count==1 => means only the script is only running to check, no proccessing is happening
+        // count==2 => means there was 1 instance already running(proccessing)
+        return $pids;
+    }
+
+    public static function sanitize($string, $ascii_only = true)
+    {
+        $profanity = array(
+            "shit",
+            "shitter",
+            "shitting",
+            "ass",
+            "cunt",
+            "bastard",
+            "bitch",
+            "slut",
+            "fuck",
+            "fucker",
+            "fucking",
+            "motherfucker",
+            "fuk",
+            "phuk"
+        );
+        $tmp = explode(" ", $string);
+        foreach ($tmp as $k => $t) {
+            if (in_array(strtolower($t), $profanity)) {
+                unset($tmp[$k]);
+            }
+        }
+
+        $string = implode(" ", $tmp);
+        $string = self::convert_ascii($string, $ascii_only);
+        $string = strip_tags($string);
+        $string = trim($string);
+
+        return $string;
+    }
+
+    // http://php.net/manual/en/function.iconv.php#83238
+    public static function clearUTF($s)
+    {
+        // patch to handle ø
+        $s = mb_ereg_replace('ø', 'o', $s);
+
+        // set location and convert to closest possible US character
+        setlocale(LC_ALL, 'en_US.UTF8');
+        $r = '';
+        $s1 = iconv('UTF-8', 'ASCII//TRANSLIT', $s);
+        for ($i = 0; $i < strlen($s1); $i++) {
+            $ch1 = $s1[$i];
+            $ch2 = mb_substr($s, $i, 1, 'UTF-8');
+            $r .= $ch1 == '?' ? $ch2 : $ch1;
+        }
+
+        return $r;
+    }
+
+    public static function getWordGrams($str, $n = 1)
+    {
+        $grams = array();
+        $tokens = explode(' ', $str);
+        $count = count($tokens);
+        $limit = $count - $n;
+        for ($i = 0; $i <= $limit; $i++) {
+            $g = '';
+            for ($j = $i; $j < $i + $n; $j++) {
+                $g .= ' ' . $tokens[$j];
+            }
+            $grams[] = trim($g);
+        }
+
+        return $grams;
+    }
+
+    /**
+     * We consider a small amount to be less than or equals $2.00 dollars
+     * Also don't make the call to Sailthru if the $item is empty
+     *
+     */
+    public static function isSmallAmountPurchase($items)
+    {
+        if (empty($items)) {
+            return false;
+        }
+
+        $total_price = 0;
+        foreach ($items as $item) {
+            $total_price += $item['price'];
+        }
+
+        return ($total_price <= self::TWO_DOLLARS_IN_CENTS);
+    }
+
+    public static function testElasticSearchNodeStatus($host, $port = 9200)
+    {
+        $s = curl_init();
+
+        curl_setopt($s, CURLOPT_URL, "http://$host:$port/_cluster/health");
+        curl_setopt($s, CURLOPT_TIMEOUT, Constants::ELASTICSEARCH_DEV_CONNECTION_TIMEOUT);
+        curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($s, CURLOPT_FOLLOWLOCATION, true);
+        $response = curl_exec($s);
+        $json = json_decode($response);
+
+        // check that cluster status is green or yellow (re-locating shards/replicas)
+        return self::isElasticSearchClusterHealthy($json);
+    }
+
+    /*
+     * params $json json decoded object
+     *
+     */
+    public static function isElasticSearchClusterHealthy($json)
+    {
+        if (!is_object($json) || !property_exists($json, "status")) {
+            return false;
+        }
+        if ($json->status == "green" || $json->status == "yellow") {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static
+    function testElasticsearchConnectivity(
+        $debug = false
+    ) {
+        /*
+         * Test Elasticsearch
+         */
+        $failed_nodes = array();
+        $successful_nodes = array();
+        foreach (Constants::$ELASTICSEARCH_PROD_LOAD_BALANCERS as $es_node) {
+            if (!self::testElasticSearchNodeStatus($es_node['host'], $es_node['port'])) {
+                $failed_nodes[] = $es_node;
+            } else {
+                $successful_nodes[] = $es_node;
+            }
+        }
+        if (count($failed_nodes)) {
+            // one of the nodes failed check, log it but don't fail
+            foreach ($failed_nodes as $es_node) {
+                \Tradesy\Log::error(\Tradesy\LogFiles::APPLICATION_LOG,
+                    'Error: AWS ELB Check Failed to connect to Elastic Search node at: ' . $es_node['host'] . ":" . $es_node['port']
+                );
+                if ($debug) {
+                    echo 'Error: AWS ELB Check Failed to connect to Elastic Search node at: ' . $es_node['host'] . ":" . $es_node['port'];
+                }
+            }
+
+            return false;
+        } else {
+            if ($debug) {
+                foreach ($successful_nodes as $es_node) {
+                    echo 'Success: AWS ELB Check Successfully connected to Elastic Search node at: ' . $es_node['host'] . ":" . $es_node['port'] . "\n";
+                }
+            }
+
+            return true;
+        }
+    }
+
+    public static function testRabbitMQConnectivity($debug = false)
+    {
+        /*
+        *      Test RabbitMQ
+        */
+        try {
+            // Don't use this method as we need to override the connection timeout
+            $TRabbit = \Tradesy\Service::get(TQueue::class);
+            if (!$TRabbit->isConnected()) {
+                throw New Exception('AWS ELB Check: Unable to Connect to RabbitMQ');
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            // Connection Failed
+            \Tradesy\Log::error(\Tradesy\LogFiles::APPLICATION_LOG,
+                'Error: AWS ELB Check Failed to establish connection to RabbitMQ. ',
+                $e
+            );
+            if ($debug) {
+                echo "Error: AWS ELB Check Failed to establish connection to RabbitMQ. :\n" . $e->getMessage();
+            }
+
+            return false;
+        }
+    }
+
+    public static function testMysqlConnectivity($debug = false)
+    {
+        /*
+         * Test Mysql
+         */
+        try {
+            $TMysql = \Tradesy\TMysql::connect()->db;
+            if (($val = $TMysql->query('SELECT 1')->fetchColumn()) && $val == "1") {
+                // Connection to mysql established successfully
+                if ($debug) {
+                    echo "Successfully Connected to Mysql. Select 1 successful \n";
+                }
+
+                return true;
+            } else {
+                \Tradesy\Log::error(\Tradesy\LogFiles::APPLICATION_LOG,
+                    'Error: AWS ELB Check Failed to successfully connect to MySQL.'
+                );
+                if ($debug) {
+                    echo "Select 1 failed.\n";
+                }
+
+                return false;
+            }
+        } catch (\Exception $e) {
+            \Tradesy\Log::error(\Tradesy\LogFiles::APPLICATION_LOG,
+                'Error: AWS ELB Check Failed to successfully connect to MySQL: ' . $e->getMessage()
+            );
+            if ($debug) {
+                echo 'Error: AWS ELB Check Failed to successfully connect to MySQL: ' . $e->getMessage() . "\n";
+            }
+
+            return false;
+        }
+    }
+
+    public static function testRedisClusterConnectivity($debug = false)
+    {
+        try {
+            $redisConnection = self::isProd()
+                ? Constants::$REDIS_CLUSTER_PROD_CONNECTION
+                : Constants::$REDIS_CLUSTER_DEV_CONNECTION;
+            $TRedis = new \RedisCluster('redisCluster', $redisConnection);
+
+            $type = get_class($TRedis); // should return RedisCluster class in production
+            if (in_array($type, ['RedisDecorator', 'RedisCluster'])) {
+                /*
+                 * As an alternative to simply pinging the nodes (pre-rediscluster), we need to ensure that there is a
+                 * minimum number of master nodes available
+                 */
+                if (count($TRedis->_masters()) >= Constants::REDIS_MINIMUM_NUM_MASTER_NODES) {
+                    // if > 3 master we are ok otherwise fail
+                    if ($debug) {
+                        echo "Successfully found a minimum number of Redis master nodes: \n";
+                        echo implode(', ', array_map(function ($node) {
+                                return $node[0] . ":" . $node[1];
+                            }, $TRedis->_masters())) . "\n";
+                    }
+
+                    return true;
+                } else {
+                    // Connection Failed
+                    //throw New Exception('AWS ELB Check: Unable to Connect to RedisCluster');
+                    \Tradesy\Log::error(\Tradesy\LogFiles::APPLICATION_LOG,
+                        'Error: AWS ELB Check Failed locating a minimum of ' .
+                        Constants::REDIS_MINIMUM_NUM_MASTER_NODES .
+                        " Redis Master nodes"
+                    );
+                    if ($debug) {
+                        echo 'Error: AWS ELB Check Failed located Minimum of ' .
+                            Constants::REDIS_MINIMUM_NUM_MASTER_NODES .
+                            ' Redis Master nodes';
+                    }
+
+                    return false;
+                }
+            } else {
+                \Tradesy\Log::error(\Tradesy\LogFiles::APPLICATION_LOG,
+                    'Error: AWS ELB Check Failed to find the correct redis cluster class'
+                );
+                if ($debug) {
+                    echo 'Error: AWS ELB Check Failed to find the correct redis cluster class';
+                }
+
+                return false;
+            }
+        } catch (\Exception $e) {
+            // Connection Failed
+            \Tradesy\Log::error(\Tradesy\LogFiles::APPLICATION_LOG,
+                'Error: AWS ELB Check Failed to establish connection to RedisCluster. ',
+                $e
+            );
+            if ($debug) {
+                echo "Error: AWS ELB Check Failed to establish connection to RedisCluster." . $e->getMessage();
+            }
+
+            return false;
+        }
+    }
+
+    public static function removeURLQueryString($url)
+    {
+        $pos = stripos($url, '?');
+        if ($pos !== false) {
+            $url = substr($url, 0, $pos);
+        }
+
+        return $url;
+    }
+
+    public static function checkRequestPortMatch($port)
+    {
+        if ($_SERVER['SERVER_PORT'] == $port) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function getS3Files(Array $credentials, $bucket, Array $file_names)
+    {
+        $results = array();
+        try {
+            $s3_client = \Aws\S3\S3Client::factory($credentials);
+            foreach ($file_names as $file) {
+                $results[$file] = (string)$s3_client->getObject([
+                    'Bucket' => $bucket,
+                    'Key' => $file,
+                ])->get('Body');
+            }
+        } catch (\Exception $e) {
+            \Tradesy\Log::error(\Tradesy\LogFiles::APPLICATION_LOG,
+                'Error: AWS S3 Failed to connect: ' . $e->getMessage()
+            );
+
+            return false;
+        }
+
+        return $results;
+    }
+
+    public static function getEnvironment()
+    {
+        if (self::isProd()) {
+            return "prod";
+        }
+        if (self::isQA()) {
+            return "qa";
+        }
+        if (self::isDev()) {
+            return "dev";
+        }
+        if (self::isStage()) {
+            return "stage";
+        }
+
+    }
+
+    /*
+     * $credentials must be in v2 format and include the region
+     *
+     */
+    public static function getAWSELBInstancesHealth(Array $credentials, $load_balancer_name)
+    {
+        try {
+            $ELB_client = \Aws\ElasticLoadBalancing\ElasticLoadBalancingClient::factory(
+                $credentials
+            );
+            $health = $ELB_client->describeInstanceHealth(array(
+                // LoadBalancerName is required
+                'LoadBalancerName' => $load_balancer_name
+            ));
+
+            return $health->get('InstanceStates');
+
+        } catch (\Exception $e) {
+            \Tradesy\Log::error(\Tradesy\LogFiles::APPLICATION_LOG,
+                'Error: AWS ELB failed to retrieve healthy hosts: ' . $e->getMessage()
+            );
+
+            return false;
+        }
+    }
+
+    public static function getApacheINIFilename()
+    {
+        return "/var/www/sites/" . self::getEnvironment() . "/" . Constants::AWS_APACHE_RELEASE_INI_FILENAME;
+    }
+
+    public static function compareReleaseNumbers($active, $local, $repositories_to_check)
+    {
+        $outdatedRepos = [];
+        foreach ($repositories_to_check as $repo) {
+            $local_release_version = $local['Active Releases'][$repo];
+            $desired_release = trim($active[$repo]);
+            if ($desired_release != $local_release_version) {
+                $outdatedRepos[] = array(
+                    'repo' => $repo,
+                    'desired_version' => $desired_release,
+                    'local_version' => $local_release_version
+                );
+            }
+        }
+
+        return $outdatedRepos;
+    }
+
+    public static function shouldThisServerReturn200ResponseELBHealthCheck($ini_file_contents)
+    {
+        if ((array_key_exists("Force Active", $ini_file_contents) && array_key_exists("force",
+                    $ini_file_contents['Force Active'])) && ($ini_file_contents["Force Active"]['force'] == 'true' || $ini_file_contents["Force Active"]['force'] == true)
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    // TODO: remove once Shop-Hers Migration is over
+    public static function shophers_mysql_reporting_PDO_connect()
+    {
+        $dbh = null;
+        try {
+            if (self::isProd()) {
+                Log::info(
+                    LogFiles::PDO_CONNECTIONS,
+                    'Utility::mysql_PDO_connect()'
+                );
+            }
+        } catch (Exception $e) {
+        }
+
+        $host = "prod-hers-rds-lag-zero.cgynahcsug3v.us-west-1.rds.amazonaws.com";
+        $db = "shophers_production";
+        $user = "reporting";
+        $password = "zGHDYUCJkCXa";
+
+        $dbh = new TPdo(
+            'mysql:host=' . $host . ';dbname=' . $db,
+            $user,
+            $password,
+            array(
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+                \PDO::MYSQL_ATTR_SSL_CA => '/etc/mysql/sh-mysql.pem'
+            )
+        );
+
+        return $dbh;
+    }
+
+    /**
+     * Emits JSON-encoded response to client, along with appropriate Content-Type header.
+     * If the encoding failed, sets HTTP status code to 500 and displays reason for encoding failure as plaintext error.
+     *
+     * @param $data the data to JSON encode and emit.
+     * @param int $options json_encode() options.
+     */
+    public static function emitAsJson($data, $options = JSON_PRETTY_PRINT /*| JSON_PRESERVE_ZERO_FRACTION*/)
+    {
+        $json = json_encode($data, $options);
+        if ($json !== FALSE) {
+            header('Content-Type: application/json');
+
+            echo $json;
+        } else {
+            // json_encode() failed
+            http_response_code(Constants::HTTP_INTERNAL_SERVER_ERROR);
+            header('Content-Type: text/plain');
+
+            $errorMessage = json_last_error_msg();
+            if ($errorMessage === FALSE) {
+                // json_last_error_msg() failed
+                $errorMessage = 'Unknown JSON error (unable to translate error code: ' .
+                    json_last_error() . ')';
+            }
+
+            echo "Error encoding JSON response: $errorMessage";
+        }
+    }
+
+    /**
+     * Emits a standard JSON-encoded error messsage to client.
+     *
+     * @param {Array|string} $errorMessage either an array of error messages keyed by form field or a string (that gets keyed to 'general').
+     * @param {int} $statusCode optional HTTP status code to set with error (also gets encoded in JSON response).
+     */
+    public static function emitErrorAsJson($errorMessage, $statusCode=null)
+    {
+        $logMessage = 'Error: ';
+        if (is_array($errorMessage)) {
+            // Array of error messages keyed by form field
+            $errors = $errorMessage;
+            if (count($errors) > 0) {
+                $logMessage .= '-' . implode('\n -', $errors);
+            }
+        } else {
+            // Single error message
+            $errors = ['general' => $errorMessage];
+            $logMessage .= $errorMessage;
+        }
+
+        $responseBody = [
+            'errors' => $errors
+        ];
+
+        // Include HTTP status code
+        if ($statusCode !== null) {
+            http_response_code($statusCode);
+            $responseBody['error_code'] = $statusCode;
+        }
+
+        // Log error(s)
+        \Tradesy\Log::notice(\Tradesy\LogFiles::APPLICATION_LOG, $logMessage);
+
+        // Emit error(s)
+        self::emitAsJson($responseBody);
+    }
+}

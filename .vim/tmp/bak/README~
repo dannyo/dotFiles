@@ -1,0 +1,18 @@
+Tradesy Recommendations Functional Test Read Me
+
+This is the functional test suite for the recommendations api service.
+
+Requirements:
+1. You will need to have node the node package manager installed. If using homebrew, you run install by running "sudo brew install npm"
+2. Run "npm install" in ~/Projects/tradesy-core/tradesy-service-recommendations/tests/Functional (package.json should be in here)
+3. To run the test suite, run "npm test"
+3a. To run a specific suite run "REC_URL=http://dev.services.trsy.io/recommendations mocha test" or "REC_URL=http://dev.services.trsy.io/recommendations mocha test {{location}}"
+
+Run in PhpStorm:
+1. Install "NodeJs" plugin in Preferences -> Plugins
+2. Go to Run -> Edit Configurations... Select Defaults dropdown on left column. Select Mocha and add a new environment variable:
+    REC_URL=http://dev.services.trsy.io/recommendations
+3. Click apply.
+4. You should be able to run tests by right clicking on a file or a test method.
+
+

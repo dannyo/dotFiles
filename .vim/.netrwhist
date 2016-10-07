@@ -1,0 +1,6 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =4
+let g:netrw_dirhist_1='/Users/dannyorh/dev/js/helloNode/node_modules'
+let g:netrw_dirhist_2='/Users/dannyorh/.vim/bundle'
+let g:netrw_dirhist_3='/Users/dannyorh/.vim'
+let g:netrw_dirhist_4='/Users/dannyorh/dev/grocerybuddy/test'

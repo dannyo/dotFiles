@@ -1,0 +1,3 @@
+#!/bin/bash
+guest_ip=$(vboxmanage guestproperty enumerate default | awk -F, '/IP/ {print $2}'| awk '/192.168.99/ {print $2}')
+

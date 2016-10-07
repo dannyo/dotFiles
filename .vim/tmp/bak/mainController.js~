@@ -1,0 +1,200 @@
+var finance = angular.module('finance', ['underscore', 'filters', 'ui.bootstrap']);
+
+function mainController($scope, $http, _) {
+    $scope.title = "Personal Finance";
+    var today = new Date();
+    $scope.date = today.getMonth() + 1  + '/' + today.getDate() + '/' + today.getFullYear(); 
+    $scope.description = null;
+    $scope.amount = null;
+    $scope.paymentType = null;
+    $scope.tag = null;
+    $scope.columnHeaders = [
+        {value: 'date', displayName: 'Date'}, 
+        {value: 'description', displayName: 'Description'}, 
+        {value: 'amount', displayName: 'Amount'},
+        {value: 'paymentType', displayName: 'Payment Type'},
+        {value: 'tag', displayName: 'Tag'}];
+    $scope.financeRecords=[];
+    $scope.orderProp = 'date';
+    $scope.reverseOrder = true;
+    $scope.deletedRecords = [];
+    //$scope.columnHeaders = [{columnName:'Date'}, 
+    //{columnName: 'Description'}, {columnName: 'Amount'}, 
+    //{columnName: 'Payment Type'}, {columnName:'Tag'}];
+    $scope.populateRecords = function(){
+        $http.get('/records').success(function(data) {
+            $scope.financeRecords = data;
+            $scope.calculateStatistics();
+            $scope.prepareTypeaheadData();
+        });
+    }
+    $scope.populateRecords();
+
+    $scope.prepareTypeaheadData = function() {
+        $scope.descriptions = _.uniq(_.pluck($scope.financeRecords, 'description'));
+        $scope.paymentTypes = _.uniq(_.pluck($scope.financeRecords, 'paymentType'));
+        $scope.tags = _.uniq(_.pluck($scope.financeRecords, 'tag'));
+    }
+
+    $scope.calculateStatistics = function (){
+        $scope.calculateTotalSpent();
+        $scope.calculateAverageCostPerDay();
+        $scope.calculateProjectedAnnualCost();
+    }
+
+    // refactor this into service  
+    $scope.calculateFilteredTotalSpent = function(filteredData){
+        var filteredTotalSpent = 0;
+        _.each(filteredData, function(record) {
+            filteredTotalSpent += parseFloat(record.amount.replace(',',''));
+        });
+        return filteredTotalSpent.toFixed(2);
+    };
+
+
+    $scope.sortByDate = function (record){
+        return new Date(record.date);
+    }
+
+    $scope.sortByAmount = function(record){
+        return parseFloat(record.amount.replace(',','')); 
+    }
+
+    $scope.sort = function(record){
+        if($scope.orderProp === 'date'){
+            return $scope.sortByDate(record);
+        } 
+        if($scope.orderProp === 'amount'){
+            return $scope.sortByAmount(record);
+        } 
+        return record[$scope.orderProp];
+    }
+
+    $scope.setOrderProp = function(newOrderProp){
+        if($scope.orderProp === newOrderProp){
+            $scope.flipReverseOrder();
+        } else {    
+            $scope.reverseOrder = newOrderProp === 'date' ? true : false;
+            $scope.orderProp = newOrderProp; 
+        }
+    }
+
+    $scope.flipReverseOrder = function(){
+        $scope.reverseOrder = $scope.reverseOrder === true ? false : true;
+    }
+
+    $scope.getCaretClass = function(headerValue) {
+        if(headerValue === $scope.orderProp && 
+            (($scope.reverseOrder === false && $scope.orderProp !=='date') || 
+                ($scope.orderProp ==='date' && $scope.reverseOrder ===true))){
+            return 'dropup';
+        }
+    }
+
+    $scope.calculateTotalSpent = function() {
+        $scope.totalSpent = 0;
+        var i;
+        for(i=0; i< $scope.financeRecords.length ;i++){
+            $scope.totalSpent += parseFloat($scope.financeRecords[i].amount.replace(',',''));
+        }
+        $scope.totalSpent = $scope.totalSpent.toFixed(2);
+    }
+
+    $scope.calculateAverageCostPerDay = function(){
+        $scope.averageCostPerDay = 0;
+        $scope.averageCostPerDay = ($scope.totalSpent/getNumberOfDaysPassed()).toFixed(2);
+    };
+
+    // refactor this into service  
+    $scope.calculateFilteredAverageCostPerDay = function(filteredData){
+        return ($scope.calculateFilteredTotalSpent(filteredData)/getNumberOfDaysPassed()).toFixed(2); 
+    };
+
+    //refactor this into service
+    function getNumberOfDaysPassed(){
+        var today=new Date();
+        var beginningOfYear=new Date(2014,0,1);
+        var diff=today-beginningOfYear;
+        numDaysPassed=Math.round(diff/1000/60/60/24);
+        return numDaysPassed;
+    }
+
+    $scope.calculateProjectedAnnualCost = function() {
+        $scope.projectedAnnualCost = 0;
+        $scope.projectedAnnualCost = ($scope.averageCostPerDay * 365).toFixed(2);
+    };
+
+    // refactor this into service  
+    $scope.calculateFilteredProjectedAnnualCost = function(filteredData){
+        return ($scope.calculateFilteredAverageCostPerDay(filteredData) * 365).toFixed(2);
+    };
+
+    $scope.allFieldsFilled = function(){
+        return $scope.date && $scope.description && $scope.amount && $scope.paymentType && $scope.tag;
+    }
+
+    $scope.createNewRecord = function(){
+        var newRecord = {
+                date: $scope.date,
+                description: $scope.description,
+                amount: parseFloat($scope.amount).toFixed(2),
+                paymentType: $scope.paymentType,
+                tag: $scope.tag
+            };
+        $scope.saveRecord(newRecord);
+    }
+
+    $scope.removeRecord = function(record) {
+        console.log(record);
+        $http({
+            method: 'delete',
+            url: '/record/' + record._id
+        }).success(function(){
+            $scope.deletedRecords.push(record);
+            var index = $scope.financeRecords.indexOf(record);
+            $scope.financeRecords.splice(index, 1);
+            $scope.calculateStatistics();
+        });
+    }
+
+    $scope.undoDelete = function() {
+        var lastDeletedRecord = $scope.deletedRecords.pop(); 
+        delete lastDeletedRecord._id;
+        $scope.saveRecord(lastDeletedRecord);
+    }
+
+    $scope.saveRecord = function(record) {
+        $http.post('/record', record).success(function(){
+            $scope.financeRecords.push(record);
+            $scope.populateRecords();
+            $scope.clearCurrentFields();
+            $scope.calculateStatistics();
+        });
+
+    }
+
+    $scope.recordSelected = function(record) {
+        return record.isSelected ==='true' ? 'true' : 'false';
+    }
+
+    $scope.selectRecord = function(record) {
+        record.isSelected = record.isSelected === 'true' ? 'false' : 'true';
+    }
+
+    $scope.clearCurrentFields = function() {
+        $scope.description = null;
+        $scope.amount = null;
+        $scope.paymentType = null;
+        $scope.tag = null;
+    }
+
+    $scope.getSearchResults = function(searchValue){
+        if(searchValue.length > 2) {
+            $http({
+                url: '/search', 
+                method: "GET",
+                params: {searchValue: searchValue}
+            });
+        }
+    };
+}

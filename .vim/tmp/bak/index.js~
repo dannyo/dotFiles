@@ -1,0 +1,908 @@
+var browser = require('browser');
+var common = require('common');
+var fidel = require('fidel');
+var json = require('json');
+
+require('jquery');
+require('badonkatrunc');
+require('carousel');
+require('jqueryUI');
+require('jqueryScrollPane');
+require('mousewheel');
+
+
+/**
+ * Category controller
+ *
+ * @type {FidelModule}
+ */
+module.exports = fidel.define('category', {
+  defaults : {
+    args : tradesyApp.category.args_json,
+    brandSearch : {
+      maxResults : 50,
+      minScore : 0.375,
+      minScoreLength : 3
+    },
+    completeBrandList : null,
+    editorsPicksList : JSON.parse(tradesyApp.category.complete_editorspicks_json),
+    filterSaveEditMode : false,
+    filterSaveOrigStateArr : [],
+    filterSaveBtnDisabled : false,
+    i18 : {
+      eng : {
+        error : {
+          brand : 'Uh oh - we couldn\'t find a matching brand!'
+        }
+      }
+    },
+    opts : tradesyApp.category.opts_json,
+    share : tradesyApp.category.share_json,
+    twitter : {
+      maxDescriptionLength : 118
+    },
+    brandList : {},
+    brandListHtmlCache : ''
+  },
+  elements : {
+    active : '.active',
+    badonkatruncLess : '.badonkatrunc-less',
+    badonkatruncMore : '.badonkatrunc-more',
+    categoryContentTop : '#category-content-top',
+    categoryDesignerList : '#category_designer_list',
+    categoryEditorsPicksList : '#category_editorspicks_list',
+    categoryFeaturedBoutiquesList : '#category_featuredboutiques_list',
+    categoryFilterAvailability : '#category_filter_availability',
+    categoryFilterBoutiques : '#category_filter_boutiques',
+    categoryFilterCondition : '#category_filter_condition',
+    categoryFilterDiscount : '#category_filter_discount',
+    categoryFilterNavContainer : '#category_filter_nav_container',
+    categoryFilterPriceForm : '#category_filter_price_form',
+    categoryMobileShowFilterButton : '#category_mobile_show_filter_bttn',
+    categoryNavDrop : '#category-nav-drop',
+    categoryShareSelect : '.category_share_select',
+    categorySizeLabelModeAll : '#category_size_label_mode_all',
+    categorySizeLabelEdit : '#category_size_label_edit',
+    categorySocialShare : '#category-social-share',
+    categorySortBar : '#category-sort-bar',
+    categoryStoredSizes : '#category-stored-sizes',
+    categoryStoredSizesAction : '#category-stored-sizes-action',
+    categoryStoredSizesView : '#category-stored-sizes-view',
+    categoryViewAllDesigners : '#category_view_all_designers',
+    categoryViewAllEditorsPicks : '#category_view_all_editorspicks',
+    categoryViewAllFeaturedBoutiques : '#category_view_all_featuredboutiques',
+    checkbox : '.checkbox',
+    checked : '.checked',
+    collapsable : '.collapsable',
+    collapsed : '.collapsed',
+    colorFilter : '#color-filters',
+    designerFiltersSearch : '#designer-filters-search',
+    disabled : '.disabled',
+    //doormatCatalogCarousel : '#doormat-catalog-carousel',
+    doormatDesigners : '.doormat-designers',
+    doormatDesignerPebble : '.brand-pebble',
+    doormatDesignersPebbles : '.doormat-designers .brands',
+    filterButton : 'button[data-mobile-nav]',
+    filterDisplay : '#filter-display',
+    filters : '.filters',
+    filtersNested : '#filters-nested',
+    filtersViewAll : '.filters-view-all',
+    fireToggle : '#fire-toggle',
+    fleft : '.fleft',
+    hide : '.hide',
+    iconHeart : '.icon-heart',
+    iconHeartOutline : '.icon-heart-outline',
+    item : '.item',
+    jspContainer : '.jspContainer',
+    jspScrollable : '.jspScrollable',
+    mainRevealModal : '#main_reveal_modal',
+    mobileCategoryTrendGallery : '#mobile-category-trend-gallery',
+    mobileDoormatDesignersPebbles : '#mobile-doormat-designers .brands',
+    mobileSeoRelatedLinks : '#mobile-seo-related-links',
+    modalShareFacebook : '#modal-share-facebook',
+    modalShareGoogle : '#modal-share-google',
+    modalSharePinterest : '#modal-share-pinterest',
+    modalShareTwitter  : '#modal-share-twitter',
+    noAnimation : '.no-ani',
+    pagination : '#pagination',
+    product : '.product',
+    productLink : 'a[data-category-product-link]',
+    promotedItem : '.item.promoted',
+    rightPanel : '#right-panel',
+    scroll :  '.scroll',
+    selected : '.selected',
+    seoContent : '#grid-seo-landing .seo-content',
+    seoPebbles : '.seo-pebbles',
+    shareFacebook : '#share-facebook',
+    shareGoogle : '#share-google',
+    sharePinterest : '#share-pinterest',
+    shareTwitter  : '#share-twitter',
+    show : '.show',
+    showLess : '.show-less',
+    showMore : '.show-more',
+    signupBanner : '.signup-banner',
+    sizeFilters : '.size-filters',
+    sizeFiltersNav : '#size-filters-nav',
+    socialShareButton : '.social-share-button',
+    trendLdSale : '.trend-ld-sale-discount-container',
+    truncateCopy : '.truncate-copy',
+    wedDestination : '.wed-destination',
+    wedFormal : '.wed-formal',
+    wedModern : '.wed-modern',
+    wedVintage : '.wed-vintage'
+  },
+  init : function() {
+    var self = this,
+        pebbles = $(this.elements.doormatDesignersPebbles).children(this.elements.doormatDesignerPebble),
+        priceFilter = $(this.elements.categoryFilterPriceForm);
+
+    if (tradesyApp.hasOwnProperty('saved_favorite')) {
+      this.addWant(null);
+      delete tradesyapp.saved_favorite_page;
+    }
+
+    this.unbindForcedReg();
+    this.jScrollPane();
+    this.bindClickRadios();
+    this.bindClickCheckBoxes();
+    this.recheckResponsive();
+    this.viewWeddingDresses();
+    this.emit('badonkatrunc');
+    this.defaults.brandListHtmlCache = $(this.elements.categoryDesignerList).html();
+
+
+    $(window).on('resize', function() {
+      self.recheckResponsive();
+    });
+
+    $(this.elements.promotedItem).on('click', 'a', function () {
+      analytics.track('Clicked Promoted Item', {
+        itemId: $(this).attr('data-category-product-link')
+      });
+    });
+
+    $(this.elements.categoryFilterNavContainer + ',' + this.elements.rightPanel).off('click', this.elements.filterButton).on('click', this.elements.filterButton, function() {
+      switch($(this).data('mobile-nav')) {
+        case 'hide':
+          $(self.elements.categoryFilterNavContainer).hide('slide', {
+            direction : 'left'
+          }, 500);
+        break;
+        case 'show':
+          $(self.elements.categoryFilterNavContainer).show('slide', {
+            direction : 'left'
+          }, 500);
+        break;
+      }
+
+      if ($(this).data().hasOwnProperty('mobileNav')) {
+          $(self.elements.categoryStoredSizes).addClass(self.elements.collapsed.substr(1));
+      }
+    });
+
+    $(this.elements.colorFilter).on('click', 'a', function() {
+      if (!/^\W(no_results)+$/i.test($(this).attr('href'))) {
+        $(this).children().toggleClass(self.elements.selected.substr(1));
+      }
+    });
+
+    $(this.elements.sizeFilters).off('click', 'a').on('click', 'a', function() {
+      if (!$(this).hasClass(self.elements.disabled.substr(1))) {
+        $(this).toggleClass(self.elements.selected.substr(1));
+      }
+    });
+
+    $(this.elements.filtersViewAll).off('click').on('click', function() {
+      var filter = $(this).data('filter'),
+          method = 'showAll' + filter.charAt(0).toUpperCase() + filter.slice(1);
+
+      $(this).parent().remove();
+
+      self[method]();
+    });
+
+    $(this.elements.collapsable).off('click', 'h3').on('click', 'h3',function() {
+      var parent = $(this).parent();
+
+      if (!parent.is($(self.elements.categoryFilterNavContainer).children())) return false;
+
+      parent.toggleClass(self.elements.collapsed.substr(1));
+    });
+
+    $(this.elements.sizeFiltersNav).off('click', 'button').on('click', 'button', function(event) {
+      self.showSizeChart($(this).data('category-size-tier-link'), $(event.delegateTarget));
+    });
+
+    priceFilter.on('submit', function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      var ctx = $(event.delegateTarget).find('input'),
+          min = parseInt(ctx.eq(0).val(), 10) || 0,
+          max = parseInt(ctx.eq(1).val(), 10) || 999999;
+
+      self.refreshPriceFilters(min, max);
+    });
+
+    priceFilter.on('keyup', 'input', function(event) {
+      if (event.which !== 13) return false;
+
+      event.preventDefault();
+
+      $(self.elements.categoryFilterPriceForm).trigger('submit');
+    });
+
+    $(this.elements.mobileCategoryTrendGallery).owlCarousel({
+      navigation : false,
+      navigationText: ["&lsaquo;","&rsaquo;"],
+      autoPlay: true,
+      slideSpeed : 300,
+      paginationSpeed : 400,
+      pagination: true,
+      singleItem: true
+    });
+
+    $(this.elements.mobileDoormatDesignersPebbles).owlCarousel({
+      navigation : false,
+      navigationText: ["&lsaquo;","&rsaquo;"],
+      autoPlay: false,
+      slideSpeed : 300,
+      paginationSpeed : 400,
+      pagination: false,
+      singleItem: false,
+      itemsCustom : [
+        [0, 3],
+        [481, 4]
+      ]
+    });
+
+    $(this.elements.mobileSeoRelatedLinks).owlCarousel({
+      navigation : false,
+      navigationText: ["&lsaquo;","&rsaquo;"],
+      autoPlay: false,
+      slideSpeed : 300,
+      paginationSpeed : 400,
+      pagination: false,
+      singleItem: false,
+      itemsCustom : [
+        [0, 3],
+        [481, 4],
+        [640, 5],
+        [769, 4]
+      ]
+    });
+
+    $(this.elements.fireToggle).off('click').on('click', function() {
+      $(self.elements.categoryNavDrop).slideToggle();
+      $(self.elements.showMore).toggleClass(self.elements.hide.substr(1));
+      $(self.elements.showLess).toggleClass(self.elements.show.substr(1));
+    });
+
+    $(this.elements.doormatDesigners).on('click', '.show-more button', function() {
+      // badonkatrunq handler comes first
+      // active means in all showing state
+      if ($(this).hasClass('active')) {
+          return;
+      }
+
+      var offsetThreshold = $(self.elements.doormatDesigners).offset().top;
+
+      if (window.scrollY > offsetThreshold) {
+        $('html, body').animate({
+          scrollTop: offsetThreshold
+        }, 100);
+      }
+    });
+
+    if ($(this.elements.seoPebbles).find('a').length > 4) $('button', $(self.elements.seoContent)).show();
+
+    $('button', $(this.elements.seoContent)).on('click', function() {
+
+      $(self.elements.seoPebbles).toggleClass('active');
+      $('button', $(self.elements.seoContent)).toggleClass('active');
+
+      var offsetThreshold = $(self.elements.seoContent).offset().top;
+
+      if (window.scrollY > offsetThreshold) {
+        $('html, body').animate({
+          scrollTop: offsetThreshold
+        }, 100);
+      }
+    });
+
+    $(this.elements.socialShareButton).on('click', function(event) {
+
+      common.eventTracking.pushGTMevent('social_share', 'modal');
+
+      self.emit('showModal', { type : 'category/social', data : null });
+
+      $(self.elements.mainRevealModal).off('click', self.elements.categoryShareSelect + ' button').on('click',  self.elements.categoryShareSelect + ' button', function() {
+        self.shareOnSocial($(this).data('social'));
+      });
+    });
+
+    $(this.elements.categoryStoredSizesAction).on('click', 'button', function(event) {
+      var method = ['filterSizeSave', 'filterSizeEdit'];
+
+      self[method[$(event.delegateTarget).find(event.target.tagName).index($(this))]]();
+    });
+
+    $(this.elements.categoryStoredSizesView).on('click', 'button', function() {
+      if ($(this).data('mode') === 'edit') {
+        $(self.elements.categoryFilterNavContainer).show('slide', {
+           direction : 'left'
+        }, 500);
+
+        $(self.elements.categoryStoredSizes).removeClass(self.elements.collapsed.substr(1));
+      } else {
+        self.filterSizeUpdateMode($(this).data('mode'));
+      }
+    });
+
+    $('input', $(this.elements.designerFiltersSearch)).on('keyup', function() {
+      self.keyupDesignerSearch();
+    });
+
+    $(this.elements.categorySocialShare).on('click', 'button', function() {
+      self.shareOnSocial($(this).data('social'));
+    });
+
+    $(this.elements.signupBanner).on('click', 'button', function() {
+      self.emit('showRegmodal');
+    });
+
+    // minimum shown
+    if ( pebbles.length > 2 ) {
+
+      // lame logic to determine if button should be shown
+      if (Math.floor((pebbles.width() * pebbles.length) / $(this.elements.doormatDesignersPebbles).width()) >= 1) {
+
+        $('button', $(self.elements.doormatDesigners)).show().off('click').on('click', function() {
+          $(self.elements.doormatDesignersPebbles).toggleClass('active');
+          $(this).toggleClass('active');
+        });
+      }
+    }
+
+    // track filter clicks
+    $('a', this.elements.categoryFilterNavContainer).on('click', function() {
+      common.eventTracking.pushGTMevent('event_tracking', 'applied_filter');
+    });
+
+  },
+  brandMatch : function(input) {
+    var results = this.findClosestBrand(input);
+
+    if (results.length) {
+      var frag = this.generateDesignerHtml(results);
+
+      $(this.elements.categoryDesignerList).addClass(this.elements.scroll.substr(1)).html(frag);
+    } else {
+      this.emptyMatchWarning();
+    }
+
+    this.bindClickCheckBoxes();
+  },
+
+  bindClickCheckBoxes : function() {
+    var self = this;
+
+    $(this.elements.filters + this.elements.checkbox).on('click', 'a', function() {
+      if (!$(this).hasClass(self.elements.disabled.substr(1))) {
+        $(this).addClass(self.elements.checked.substr(1));
+      }
+    });
+  },
+  bindClickRadios : function() {
+    var self = this;
+
+    $(this.elements.filters + ':not(' + this.elements.checkbox + ')').on('click', 'a', function() {
+      if (!$(this).hasClass(self.elements.disabled.substr(1))) {
+        $(this).parent().siblings().find('a').removeClass(self.elements.selected.substr(1));
+        $(this).toggleClass(self.elements.selected.substr(1));
+      }
+    });
+  },
+  emptyMatchWarning : function() {
+    $(this.elements.categoryDesignerList).html(this.defaults.i18.eng.error.brand);
+  },
+  filterSizeEdit : function() { 
+    if (!common.tradesy.defaults.userId) {
+      return this.emit('giveUserAuthenticationOption');
+    } 
+
+    var self = this,
+        filterBtn = $('button', $(this.elements.categoryStoredSizesAction)),
+        saveBtn = filterBtn.eq(0),
+        editBtn = filterBtn.eq(1);
+
+    if (!this.defaults.filterSaveEditMode) {
+      $(this.elements.categoryStoredSizes).addClass(this.elements.active.substr(1));
+
+      editBtn.html('Undo');
+
+      this.defaults.filterSaveEditMode = true;
+      this.defaults.filterSaveBtnDisabled = saveBtn.hasClass(this.elements.disabled.substr(1)) ? true : false ;
+
+      saveBtn.removeClass(this.elements.disabled.substr(1)); 
+
+      var origStateArr = {};
+
+      $('a', $(this.elements.sizeFilters)).each(function(){
+        origStateArr[$(this).data('category-size-link')] = {
+          'disabled' : $(this).hasClass(self.elements.disabled.substr(1)) ? true : false,
+          'selected' : $(this).hasClass(self.elements.selected.substr(1)) ? true : false,
+          'href' : $(this).attr('href')
+        };
+
+        $(this).attr('href','javascript:;');
+        $(this).removeClass(self.elements.disabled.substr(1));
+      });
+
+      this.defaults.filterSaveOrigStateArr = origStateArr;
+    } else {
+      $(this.elements.categoryStoredSizes).removeClass(this.elements.active.substr(1));
+
+      this.defaults.filterSaveEditMode = false;
+      editBtn.html('Edit');
+
+      $('a', this.elements.sizeFilters).each(function(){
+        var key = $(this).data('category-size-link');
+
+        if (self.defaults.filterSaveOrigStateArr[key].hasOwnProperty('selected') && self.defaults.filterSaveOrigStateArr[key].selected) {
+          $(this).addClass(self.elements.selected.substr(1));
+        } else {
+          $(this).removeClass(self.elements.selected.substr(1));
+        }
+
+        if (self.defaults.filterSaveOrigStateArr[key].hasOwnProperty('disabled') && self.defaults.filterSaveOrigStateArr[key].disabled) {
+          $(this).addClass(self.elements.disabled.substr(1));
+        }
+
+        $(this).attr('href', self.defaults.filterSaveOrigStateArr[key]['href']);
+      });
+
+      this.defaults.filterSaveOrigStateArr = {};
+      if (this.defaults.hasOwnProperty('filterSaveBtnDisabled')) {
+          saveBtn.addClass(this.elements.disabled.substr(1));
+      }
+    }
+
+  },
+  filterSizeSave : function() {
+    if (!common.tradesy.defaults.userId) {
+      return this.emit('giveUserAuthenticationOption');
+    } 
+    
+    var xhr,
+        self = this,
+        sizeArr = [],
+        container = $('button', $(this.elements.categoryStoredSizesView)),
+        categorySizeAction = $(this.elements.categoryStoredSizesAction),
+        sizeGroupType = $('input', $(this.elements.categoryStoredSizes)).val();
+
+    $('button', categorySizeAction).eq(0).addClass(this.elements.disabled.substr(1));
+
+    $(this.elements.sizeFilters).find('li a' + this.elements.selected).each(function(){
+      sizeArr.push($(this).data('category-size-link'));
+    });
+
+    xhr = $.ajax({
+      cache: false,
+      url: '/ajax-category-save-sizes',
+      type: 'POST',
+      data: { sizes : sizeArr, sizeGroupType : sizeGroupType } 
+    });
+
+    if (!this.defaults.filterSaveEditMode) {
+      container.toggleClass(this.elements.active.substr(1));
+    } else {
+      xhr.done(function() {
+        var i,
+            searchStr = window.location.search.replace(/^\?/g,''),
+            searchParts = searchStr.split('&'),
+            newSearchParts = [],
+            re = /size\=/i,
+            reloadURL;
+
+        // remove previous sizes
+        for (i = 0; i < searchParts.length; i++) {
+          if (searchParts[i].match(re) || searchParts[i].length === 0) {
+              continue;
+          }
+          newSearchParts.push(searchParts[i]);
+        }
+
+        // add new sizes
+        for (i = 0; i < sizeArr.length; i++) {
+          newSearchParts.unshift( 'size=' + encodeURIComponent(sizeArr[i]) );
+        }
+        reloadURL = document.location.protocol + '//' + document.location.host + document.location.pathname + '?' + newSearchParts.join('&');
+        window.location = reloadURL;
+      });
+    }
+  },  
+  filterSizeUpdateMode : function(mode) {
+    var xhr,
+        regex = /\/size:.*?\//g,
+        reloadUrl = window.location.href.replace(regex, '/').replace(/#.*$/, '');
+    mode = (mode === 'all' ? 'force_all' : 'force_saved');
+
+    xhr = $.ajax({
+      cache: false,
+      url: '/ajax-category-filter-sizes-mode',
+      type: 'POST',
+      data: { mode : mode },
+      dataType: 'json'
+    });
+
+    xhr.done(function(result) {
+      if (!json.decode(result.success)) return false;
+
+      // remove existing size when view all pressed
+      if (mode === 'force_all' && common.tradesy.defaults.params.size) {
+        var params = [],
+            str = reloadUrl.split('?', 2),
+            args = str.length > 1 ? str[1].split('&') : [],
+            i = args.length;
+
+        while(i--) {
+          var tmp = args[i].split('='),
+              val = tmp.length > 1 ? tmp[1] : '';
+
+          if (tmp[0] === 'size') {
+              continue;
+          }
+
+          params.push(tmp[0] + '=' + val);
+        }
+
+        reloadUrl = str[0] + '?' + params.join('&');
+      }
+
+      window.location = reloadUrl;
+    });
+  },
+  findClosestBrand : function(ctx) {
+    // http://en.wikipedia.org/wiki/Tf%E2%80%93idf
+    var scores, re, i, j,
+        obj = {},
+        results = [],
+        topResults = [],
+        scope = this.defaults.brandList[ctx.substr(0,1)];
+
+    // will remove repeating characters and a single occurence of \s
+    re = new RegExp('([' + ctx.replace(/(.)(?=.*\1)/g, '').replace(/\s/,'') + ']+)', 'ig');
+
+    for (i = scope.length - 1; i >= 0; i--) {
+      // check if there is an occurrence of any input character
+      // e.g. 'LouisVuitton'.match(new RegExp('([lo]+)', 'ig'));
+      var score = scope[i].value.replace(/\s/,'').match(re);
+
+      // if brand has any similar characters with input
+      if (score) {
+        // at least one character from input matches brand value
+
+        // check if input meets minimum length for scoring
+        if (ctx.length <= this.defaults.brandSearch.minScoreLength) {
+
+          // check if result set has something with this score length already
+          if (obj.hasOwnProperty(score.length)) {
+            // e.g. if score = ["lo", "l", "o"] && obj[3], [ obj[3].push( { value : 'Louis Vuitton', slug : 'louis-vuitton });
+            obj[score.length].push(scope[i]);
+
+          } else {
+            // e.g. if !obj[3], obj[3] = [{ value : 'Louis Vuitton', slug : 'louis-vuitton }];
+            obj[score.length] = [scope[i]];
+          }
+        } else {
+
+          // loop through matches
+          // e.g ["lo", "isv", "i", "o"] on "loisv" vs 'louis vuitton'
+          // e.g ["loui", "l", "o", "u", "i"] on "loui" vs 'louis vuitton'
+          for (j = score.length - 1; j >= 0; j--) {
+            // test for duplicates again in string matches
+            // will
+            var length = /([\w])\1/.test(score[j]) ? Math.ceil(score[j].length * (1 + this.defaults.brandSearch.minScore/2)) : score[j].length,
+                // adj checks if length of match >= total amount of designers matching times minScore we'd like to see?
+                // this seems like it would reward shorter brands with equal substr matches
+                adj = ++length >= Math.floor(scope[i].value.length * this.defaults.brandSearch.minScore);
+
+            // ensure match also matches at least min characters
+            if (score[j].length >= this.defaults.brandSearch.minScoreLength && adj) {
+              if (obj.hasOwnProperty(score[j].length)) {
+                obj[score[j].length].push(scope[i]);
+              } else {
+                obj[score[j].length] = [scope[i]];
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // all calculated score lengths
+    scores = Object.keys(obj);
+
+    for (i = scores.length - 1; i >= 0; i--) {
+      // add all results in order of desc score
+      results = results.concat(obj[scores[i]]);
+    }
+
+    // go through results and give priority to greedy matches
+    for (i = results.length - 1; i >= 0; i--) {
+      var ref = results[i];
+
+      // do a case insensitive check
+      var indexPos = ref.label.toLowerCase().indexOf(ctx);
+
+      // ignore if missed
+      if (indexPos !== -1) {
+        // reward greedy match
+        topResults.push(ref);
+        results.splice(i, 1);
+      }
+    }
+
+    // limit the total possible results
+    return topResults.concat(results.slice(0, this.defaults.brandSearch.maxResults));
+  },
+  generateFeaturedBoutiquesHtml : function() {
+    var i, className, frag = '';
+
+    for (i = this.defaults.completeFeaturedBoutiquesList.length - 1; i >= 0; i--) {
+      className = ((typeof this.defaults.args['featured-boutique'] !== 'undefined' && this.defaults.args['featured-boutique'].indexOf(this.defaults.completeFeaturedBoutiquesList[i]['slug_name']) > 0) ? 'selected' : '');
+
+      frag += '<li><a class="' + className + '" href="' + this.defaults.completeFeaturedBoutiquesList[i]['url'] + '">' + this.defaults.completeFeaturedBoutiquesList[i]['display_name'] + '</a></li>';
+    }
+
+    return frag;
+  },
+  generateDesignerHtml : function(ctx) {
+    var i, frag = '';
+    for (i = 0; i < ctx.length; i++) {
+      frag += '<li><a href="' + ctx[i]['meta']['url'] + '" data-category-designers-slug="' + ctx[i]['value'] + '" class="' + ctx[i]['meta']['css'] + '">' + ctx[i]['label'] + '</a></li>';
+    }
+
+    return frag;
+  },
+  generateEditorsPicksHtml : function() {
+    var i, saleTag, frag = '';
+    for (i = 0; i < this.defaults.editorsPicksList.length; i++) {
+      saleTag = (this.defaults.editorsPicksList[i]['meta']['on_sale'] ? '<span class="label label_secondary">SALE!</span>' : '');
+      frag += '<li><a class="' + this.defaults.editorsPicksList[i]['meta']['css'] + '" href="' + this.defaults.editorsPicksList[i]['meta']['url'] + '">' + saleTag + this.defaults.editorsPicksList[i]['label'] + '</a></li>';
+    }
+    return frag;
+  },
+  grayOutLinks : function() {
+    var self = this,
+        radio = $('a[href$="#no_results"]', $(this.elements.filters + ':not(' + this.elements.checkbox + ')')),
+        checkbox = $('a[href$="#no_results"]', $(this.elements.checkbox)),
+        color = $('a[href$="#no_results"]', $(this.elements.colorFilter)),
+        size = $('a[href$="#no_results"]', $(this.elements.sizeFilters));
+
+    $.map([radio, checkbox, color, size], function(node) {
+      node.addClass(self.elements.disabled.substr(1)).off('click').on('click', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+    });
+  },
+  initForcedReg : function() {
+    this.emit('initForcedReg');
+  },
+  jScrollPane : function() {
+    var self = this,
+        scroll = $(this.elements.filters + this.elements.scroll);
+
+    if (scroll.is(':visible')) scroll.jsScrollPane();
+
+    $(window).resize(function() {
+      var scroll = $(self.elements.filters + self.elements.scroll);
+
+      if (scroll.is(':visible') && $(self.elements.jspContainer, scroll).length > 0) {
+        scroll.delay(400).jScrollPane();
+      } else if (scroll.is(':visible')) {
+        scroll.jScrollPane();
+      }
+    });
+  },
+  keyupDesignerSearch : function() {
+    var self = this,
+        input = $.trim($('input', $(this.elements.designerFiltersSearch)).val()).toLowerCase(),
+        brands = this.defaults.brandList[input[0]];
+
+    if (!input.length) {
+      $(this.elements.categoryDesignerList).html(this.defaults.brandListHtmlCache).removeClass(this.elements.scroll.substr(1)).off('click').on('click', '.filters-view-all', function() {
+        self.showAllDesigners();
+      });
+    } else if (typeof brands !== 'undefined' && brands !== null && !brands.length) {
+      self.emptyMatchWarning();
+    } else if (input.length) {
+      if (!this.defaults.brandList.hasOwnProperty(input[0])) {
+        // cached from previous request
+        this.defaults.brandList[input[0]] = null;
+
+        var xhr = $.ajax({
+          cache: false,
+          url: '/ajax-category-designer-filter/',
+          type: 'POST',
+          data: {
+            curr_url : window.location.pathname + window.location.search,
+            q_char : input[0]
+          },
+          dataType: 'json'
+        });
+
+        xhr.done(function (data) {
+          self.defaults.brandList[input[0]] = data;
+
+          if (!self.defaults.brandList[input[0]].length) {
+            self.emptyMatchWarning();
+          } else {
+            self.brandMatch(input);
+          }
+        });
+      } else if (brands !== null) {
+        self.brandMatch(input);
+      }
+
+    }
+
+  },
+  openShareWindow : function(url) {
+    window.open(url, 'Share', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');
+  },
+  recheckResponsive : function() {
+    var self = this,
+        container = $(this.elements.categoryFilterNavContainer);
+
+    $(this.elements.selected, $(this.elements.collapsable)).each(function() {
+      $(this).parents(self.elements.collapsable).addClass(self.elements.collapsed.substr(1));
+    });
+
+    if ($(window).width() <= common.tradesy.defaults.mobileResolution) {
+      container.children('div').addClass(this.elements.collapsable.substr(1));
+
+      container.on('click', 'h3[data-category-mobile-collapsable-arrow]', function() {
+        $('div[data-category-mobile-collapsable-container="' + $(this).data('data-category-mobile-collapsable-arrow') + '"]', container).toggleClass(self.elements.collapsed.substr(1));
+      });
+    } else {
+      $('h3[data-category-mobile-collapsable-arrow]', container).off('click');
+
+      container.children('div[data-category-mobile-collapsable-container]').addClass(this.elements.collapsed.substr(1));
+      $(this.elements.categoryFilterNavContainer).show();
+    }
+
+    this.emit('badonkatrunc');
+  },
+
+  composeSearchQuery : function(params) {
+    var query = '';
+    for (var key in params) {
+      var values = params[key];
+      for (var i=0; i<values.length; i++) {
+        query += key + '=' + values[i] + '&';
+      }
+    }
+
+    if (query.length > 0) {
+      query = query.substr(0, query.length-1);
+    }
+    return query;
+  },
+
+  refreshPriceFilters : function(min, max) {
+    var params = common.categoryShared.parseSearchQuery();
+    params['price'] = [min + '-' + max];
+
+    window.location = document.location.protocol + '//' + document.location.host + document.location.pathname + '?' + this.composeSearchQuery(params);
+  },
+
+  shareOnSocial : function(type) {
+    var url,
+        self = this;
+    self.defaults.share.url = common.tradesy.decodeEscapeSequence(self.defaults.share.url);
+    switch(type) {
+      case 'facebook':
+        url = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURI(self.defaults.share.url);
+      break;
+      case 'google':
+        url = 'https://plus.google.com/share?url=' + encodeURI(self.defaults.share.url);
+      break;
+      case 'pinterest':
+        url = 'https://www.pinterest.com/pin/create/button/?url=' + encodeURI(self.defaults.share.url) + '&media=' + encodeURI(self.defaults.share.image_url) + '&description=' + encodeURIComponent(self.defaults.share.title) + '. ' + encodeURIComponent(self.defaults.share.description);
+      break;
+      case 'twitter':
+        var description = self.defaults.share.title + '. ' + self.defaults.share.description,
+            title = encodeURIComponent(self.defaults.share.title);
+
+        if (description.length <= self.defaults.twitter.maxDescriptionLength) {
+          title += '. ' + encodeURIComponent(self.defaults.share.description);
+        }
+
+        url = 'https://twitter.com/share?url=' + encodeURI(self.defaults.share.url) + '&text=' + title;
+      break;
+    }
+
+    self.openShareWindow(url);
+  },
+  showAllBoutiques : function() {
+    var fragment = this.generateFeaturedBoutiquesHtml();
+
+    $(this.elements.categoryFeaturedBoutiquesList).html(fragment);
+    this.grayOutLinks();
+  },
+
+  showAllDesigners : function() {
+    if (this.defaults.completeBrandList === null) {
+      var self = this;
+      var xhr = $.ajax({
+        cache: false,
+        url: '/ajax-category-designer-filter',
+        type: 'POST',
+        data: {
+          curr_url : window.location.pathname + window.location.search
+        },
+        dataType: 'json'
+      });
+
+      xhr.done(function(data) {
+        self.defaults.completeBrandList = data;
+        self.showAllDesignersPane();
+      });
+    } else {
+      this.showAllDesignersPane();
+    }
+
+  },
+
+  showAllDesignersPane : function() {
+    var cache = this.defaults.hasOwnProperty('completeBrandListHtml'),
+      frag = (cache ? this.defaults['completeBrandListHtml'] : this.generateDesignerHtml(this.defaults.completeBrandList));
+
+    if (!cache) this.defaults['completeBrandListHtml'] = frag;
+
+    $(this.elements.categoryDesignerList).addClass(this.elements.scroll.substr(1)).html(frag);
+  },
+
+  showAllEditorspicks : function() {
+    var fragment = this.generateEditorsPicksHtml();
+
+    $(this.elements.categoryEditorsPicksList).html(fragment);
+    this.grayOutLinks();
+  },
+
+  showSizeChart : function(data, container) {
+    var sizes = $(this.elements.categoryStoredSizes);
+
+    container.find('button').removeClass(this.elements.selected.substr(1));
+    $('ul', sizes).hide();
+
+    container.find('button[data-category-size-tier-link="' + data + '"]').addClass(this.elements.selected.substr(1));
+    $('ul[data-category-size-tier-container="' + data + '"]', sizes).show();
+  },
+  unbindForcedReg : function() {
+    $(this.elements.item).off('click', this.elements.productLink);
+  },
+  viewWeddingDresses : function() {
+    var target;
+
+    switch(window.location.pathname) {
+      case '/weddings/wedding-dresses/style:destination%2Ccasual%2Cfeminine/':
+        target = this.elements.wedDestination;
+      break;
+      case '/weddings/wedding-dresses/style:formal%2Cmodest%2Ctraditional/':
+        target = this.elements.wedFormal;
+      break;
+      case '/weddings/wedding-dresses/style:modern%2Csexy/':
+        target = this.elements.wedModern;
+      break;
+      case '/weddings/wedding-dresses/style:retro%2Cvintage/':
+        target = this.elements.wedVintage;
+      break;
+    }
+
+    $(target).addClass(this.elements.active.substr(1));
+  }
+});

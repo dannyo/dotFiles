@@ -1,0 +1,30 @@
+<phpunit bootstrap="bootstrap.php"
+         colors="true"
+         asdfasljkdf:w
+         
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="false">
+
+    <php>
+        <var name="DB_DSN" value="mysql:dbname=staging;host=localhost"/>
+        <var name="DB_USER" value="root"/>
+        <var name="DB_PASSWD" value="3NdrTek1"/>
+        <var name="DB_DBNAME" value="staging"/>
+    </php>
+
+    <selenium>
+        <browser name="Internet Explorer" browser="*iexplore"/>
+        <browser name="Firefox" browser="*firefox"/>
+    </selenium>
+    <filter>
+        <whitelist>
+            <directory>../src/</directory>
+        </whitelist>
+        <blacklist>
+            <directory>../tests/</directory>
+            <directory>../vendor/</directory>
+        </blacklist>
+    </filter>
+</phpunit>

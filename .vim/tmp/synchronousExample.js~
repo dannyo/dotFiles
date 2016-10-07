@@ -1,0 +1,9 @@
+
+}
+        function fetchApi() {
+          console.log('fetching api');
+          sleep(2000); // simulate time to fetch from an api
+          console.log('data returned from the api');
+}
+        fetchPage();
+        fetchApi();

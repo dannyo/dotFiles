@@ -1,0 +1,132 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# UTC        for Universal Coordinated Time
+# EST        for Eastern Standard Time
+# US/Central for American Central
+# US/Eastern for American Eastern
+
+if (/darwin/ =~ RUBY_PLATFORM) != nil # mac
+  server_memory                    = `sysctl -n hw.memsize |   awk '{$2=$1/(1024^2)/2; print $2}'`.chomp # one half of available system memory
+  server_swap                      = `sysctl hw.memsize  | awk '{$2=$2/(1024^2)/8; print $2}'`.chomp # one eighth of memory
+  server_cpu                       = `sysctl hw.ncpu | awk '{$2=$2/(2); print $2}'`.chomp # half of cpus
+else #linux hopefully
+  server_memory                    = `grep 'MemTotal' /proc/meminfo |   sed -e 's/MemTotal://' |  awk '{$1=$1/(1024)/2;  } END  { printf("%.0f", $1) }'`.chomp # one half of available system memory
+  server_swap                      = `grep 'MemTotal' /proc/meminfo |   sed -e 's/MemTotal://' |  awk '{$1=$1/(1024)/8;  } END  { printf("%.0f", $1) }'`.chomp # one eighth of memory
+  server_cpu                       = `nproc | awk '{$1=$1/(2); print $1}'`.chomp # half of cpus
+end
+
+
+## Tradesy Repo locations
+repos = Hash.new
+repos = {
+  'tradesy-service-recommendations' => 
+    { "local"  =>  "../tradesy-service-recommendations/",
+      "remote" =>   "/var/www/sites/dev/tradesy-service-recommendations",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "vagrant",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-service-recommendations.git"
+    },
+  'tradesy-service-recommendations' => 
+    { "local"  =>  "../tradesy-service-recommendations/",
+      "remote" =>   "/var/www/sites/dev/tradesy-service-recommendations",
+      "dmode"   =>  "775",
+      "fmode"   =>  "775",
+      "owner"   =>  "vagrant",
+      "group"   =>  "www-data",
+      "repo_url" =>  "git@github.com:RecycledMedia/tradesy-service-recommendations.git"
+    },
+}
+
+is_up = is_repo = repo_flag_auto = dont_repo = false
+repo_flag_auto = ENV['PULL_REPOS'] == 'true' ? true : repo_flag_auto
+dont_repo = ENV['PULL_REPOS'] == 'false' ? true : dont_repo
+show_gui = ENV['GUI'] == 'true' ? true : false 
+exit_after_pull = ENV['EXIT_AFTER_PULL'] == 'true' ? true : false
+
+is_up = ARGV[0] == "up" ? true : is_up
+is_reload = ARGV[0] == "reload" ? true : is_up
+is_provision= ARGV[0] == "provision" ? true : is_repo
+
+# Check for repos
+if (is_up || exit_after_pull ) &&  !dont_repo
+  repos.each do | key, array|
+    if array['repo_url'].nil? then
+      next
+    end
+
+    #if directory exists, prompt user to pull Y/N
+    if  File.directory?(array['local'])
+      Dir.chdir(array['local']) do
+        #check if it's git repo
+        if `git rev-parse --is-inside-work-tree`
+        #check if up to date
+          check = `git fetch --dry-run 2>&1`
+          #length 0 sometimes when up-to-date length 27 when 'Fetching repository, done.'
+          #If different length assume not up-to-date
+          if check.length == 0 || check.length == 27
+            puts "Repo: \033[32m"+ key + "\033[0m up-to-date"
+          else
+            if !repo_flag_auto
+              puts "Hello, would you like me to git pull \033[32m"+key+"\033[0m [y,N]", "> "
+              response = $stdin.gets.chomp
+              if response.strip.downcase == 'y'
+                system('git pull')
+              end
+            else
+                system('git pull')
+            end
+          end
+        end
+      end
+    else
+      puts "Repo: \033[31m"+key+"\033[0m not found, will clone"
+      #Dir.chdir('..') do
+        `git clone "#{array['repo_url']}" "#{array['local']}"` 
+        if array.has_key?('repo_branch')
+          Dir.chdir("#{array['local']}") do
+            `git checkout "#{array['repo_branch']}"`
+          end 
+        end
+      #end
+    end
+  end
+  if ( exit_after_pull )
+    exit
+  end
+end
+
+
+Vagrant.configure(2) do |config|
+  # Set up the basics
+  config.vm.box = "tradesy/php7-development"
+  config.vm.host_name = "dev-php7.tradesy.com"
+  config.vm.network "forwarded_port", guest: 80, host: 80
+  config.vm.network "private_network", ip: "3.3.3.4"
+  config.ssh.private_key_path = "./vagrant_secure_key"
+
+
+  # LOAD SYNCED REPO DIRECTORIES
+  repos.each do | key, array|
+    config.vm.synced_folder array['local'], array['remote'], :owner=> array['owner'], :group=>array['group'], :mount_options => ['dmode='+array['dmode'], 'fmode='+array['fmode']]
+  end
+  # If using VirtualBox
+  config.vm.provider :virtualbox do |vb|
+
+    vb.gui = show_gui
+    vb.name = "Tradesy_Dev_NGINX_PHP7_Redis"
+
+    # Set server memory
+    vb.customize ["modifyvm", :id, "--memory", server_memory]
+
+    vb.customize ["modifyvm", :id, "--cpus", server_cpu]
+    # Set the timesync threshold to 10 seconds, instead of the default 20 minutes.
+    # If the clock gets more than 15 minutes out of sync (due to your laptop going
+    # to sleep for instance, then some 3rd party services will reject requests.
+    vb.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+  end
+
+end
+

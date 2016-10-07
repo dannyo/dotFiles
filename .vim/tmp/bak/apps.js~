@@ -1,0 +1,2 @@
+coonsole.log(process.env.SECRET_KEY);
+

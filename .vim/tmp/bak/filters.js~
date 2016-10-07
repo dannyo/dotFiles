@@ -1,0 +1,27 @@
+var filters = angular.module('filters', ['underscore'])
+       .filter('multiSearch', function(_) { //provides single-search-box multi-term search functionality
+            return function (objects, searchValues) {
+                //if (!delimiter) {
+                    //delimiter=" ";
+                //}
+                if (searchValues) {
+                    var objectsContainingSearchValues = []; //the list of objects that match ALL terms
+                    var regex = '(' + String(searchValues).replace(/\s+/g, '|') + ')';
+
+                    _.each(objects, function(object){
+                        _.each(Object.keys(object), function(key){
+                            if(key!=='_id' && key!==' && String(object[key]).match(new RegExp(regex))){
+                                objectsContainingSearchValues.push(object);
+                            }
+                        });
+                    });
+
+                    return _.uniq(objectsContainingSearchValues);
+                }
+                else { //if there are no terms, return all objects
+                    return objects;
+                }
+            }
+        });
+
+

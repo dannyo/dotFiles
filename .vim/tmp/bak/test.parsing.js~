@@ -1,0 +1,52 @@
+'use strict';
+
+var assert = require('assert');
+var should = require('should');
+var utils = require('utils');
+
+describe('Parsing input text', function(){
+    it('12 oz juice $1', function(){
+        var input = '12 oz juice $1';
+        var parsedInput = utils.parseInput(input);
+        should(parsedInput.price).equal('1');
+        should(parsedInput.unit).equal('ounce');
+        should(parsedInput.quantity).equal('12');
+        should(parsedInput.description).equal('juice');
+    });
+
+    it('$1 12ounces juice', function(){
+        var input = '$1 12ounces juice';
+        var parsedInput = utils.parseInput(input);
+        should(parsedInput.price).equal('1');
+        should(parsedInput.unit).equal('ounce');
+        should(parsedInput.quantity).equal('12');
+        should(parsedInput.description).equal('juice');
+    });
+
+    it('$1.01 12.5 fluid oz orange juice', function(){
+        var input = '$1.01 12.5 fluid oz orange juice';
+        var parsedInput = utils.parseInput(input);
+        should(parsedInput.price).equal('1.01');
+        should(parsedInput.unit).equal('fluid ounce');
+        should(parsedInput.quantity).equal('12.5');
+        should(parsedInput.description).equal('orange juice');
+    });
+
+    it('$10.01 for 16.5 g sugar', function(){
+        var input = '$10.01 for 16.5 g sugar';
+        var parsedInput = utils.parseInput(input);
+        should(parsedInput.price).equal('10.01');
+        should(parsedInput.unit).equal('gram');
+        should(parsedInput.quantity).equal('16.5');
+        should(parsedInput.description).equal('sugar');
+    });
+
+    it('$10.01 for 16.5 g sugar', function(){
+        var input = '$10.01 for 16.5 g sugar';
+        var parsedInput = utils.parsePrice(input);
+        //should(parsedInput.price).equal('10.01');
+        //should(parsedInput.unit).equal('gram');
+        //should(parsedInput.quantity).equal('16.5');
+        //should(parsedInput.description).equal('sugar');
+    });
+});

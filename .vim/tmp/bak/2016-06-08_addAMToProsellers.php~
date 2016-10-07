@@ -1,0 +1,25 @@
+<?php
+// This script will assign Tradesy Prosellers to their current Account Managers
+// by using a CSV file and updating the proseller_account_manager SQL table
+
+ini_set('auto_detect_line_endings', true);
+
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+$connection = \Tradesy\TMysql::connect()->db;
+
+$f = fopen('accountManagers.csv', 'r');
+
+if ($f !== false) {
+    while (($data = fgetcsv($f, 1000, ",")) !== FALSE) {
+        if(is_numeric($data[2]) && is_numeric($data[0])) {
+            $sql = 'INSERT INTO proseller_account_manager
+                    SET tradesy_user_id = :tradesy_user_id, admin_user_id = :admin_user_id
+                    ON DUPLICATE KEY UPDATE tradesy_user_id = :tradesy_user_id, admin_user_id = :admin_user_id';
+            $command = $connection->prepare($sql);
+            $command->bindParam(':tradesy_user_id', $data[0], \);
+            $command->bindParam(':admin_user_id', $data[2]);
+            $command->execute();
+        }
+    }
+}

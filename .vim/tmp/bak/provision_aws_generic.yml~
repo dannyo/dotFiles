@@ -1,0 +1,51 @@
+# Pass a var_file extra-var to determine the ec2 instance parameters
+#
+# Example Launching Production Apache Box: 
+#
+#   ansible-playbook provision_aws_generic.yml -e "var_file='vars/prod_aws_apache_provision.yml'"
+#
+#
+#   .: The above will provision a brand new apache box for use with production.
+#   
+# Example Launching Dev Generic Box:
+#
+#
+#   ansible-playbook provision_aws_generic.yml -e "var_file='vars/dev_aws_provision.yml'"
+#   
+#   NOTE: you will need to comment out the placement_group line for dev boxes.  Placement groups only apply to c3.xlarge and bigger boxes. Dev boxes default to t2.small
+#
+#
+#---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+# conditionally load right server config which should be a dict named "aws_provision_config"
+  - include_vars: "{{ var_file }}"
+  - name: Provision instance(s)
+    ec2: 
+      keypair: "{{ aws_provision_config.keypair }}"
+      region: "{{ aws_provision_config.region }}"
+      group_id: "{{ aws_provision_config.security_group }}"
+      ebs_optimized: "{{ aws_provision_config.ebs_optimized }}"
+      instance_type: "{{ aws_provision_config.type }}"
+      image: "{{ aws_provision_config.image }}"
+      count: "{{ aws_provision_config.number }}"
+      instance_tags: "{{ aws_provision_config.instance_tags }}"
+      monitoring: "{{ aws_provision_config.monitoring }}"
+      assign_public_ip: "{{ aws_provision_config.public_ip }}"
+      vpc_subnet_id: "{{ aws_provision_config.vpc_subnet_id }}"
+      placement_group: "{{ aws_provision_config.placement_group }}"
+      wait: "{{ aws_provision_config.wait }}"
+      wait_timeout: "{{ aws_provision_config.wait_timeout }}"
+      volumes: "{{ aws_provision_config.volumes }}"
+      zone: "{{ aws_provision_config.zone }}"
+    register: ec2
+
+  - debug: msg={{ item.public_ip }}
+    with_items: ec2.instances
+
+  - set_fact: instance_ip={{ item.public_ip }} instance_id={{ item.id }} target={{ item.public_ip }}
+    with_items: ec2.instances
+
+  - add_host: name=target ansible_ssh_host={{ instance_ip }}

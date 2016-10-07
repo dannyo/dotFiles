@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <title>Rebound</title>
+    </head>
+    <body>
+        <h1>Rebound</h1>
+        <div id="playingArea">
+            <div id="padding">
+                <img src="paddle.gif">
+            </div>
+            <div id="ball">
+                <img src="ball.gif">
+            </div>
+            <div id="score">
+                Score:0
+            </div>
+        </div>
+    </body>
+</html>

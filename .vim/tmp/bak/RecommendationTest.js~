@@ -1,0 +1,22 @@
+var supertest = require("supertest");
+var should = require("should");
+
+var server = supertest.agent("http://dev-php7.tradesy.com");
+
+describe("Recommendations", function() {
+
+    it("should return recommendations for a given user id", function(done) {
+        var expectedText = '{"item_id":6659059,"recommendations":[2207133,6617626,10394467,10861180,11123965,11242258]}';
+
+        server
+           .get("/items/6659059/recommendations")
+           .expect("Content-type",/json/)
+           .expect(200)
+           .end(function(err,res) {
+                res.status.should.equal(200);
+                res.text.should.equal(expectedText);
+                done();
+            });
+    });
+
+});

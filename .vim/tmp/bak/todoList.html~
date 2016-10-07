@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" ng-app>
+<head>
+  <meta charset="utf-8">
+  <title>Todo List</title>
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <script src="lib/angular/angular.js"></script>
+  <script src="js/controllers.js"></script>
+</head>
+<body>
+    <div ng-controller="TodoListController">
+    <h2>My TODOs</h2>
+      <div class="span2">
+        <div> 
+            Add todo: <input ng-model="newTodo"></input> 
+        <button data-ng-click="add(newTodo)">+</button>
+        </div>
+            <ul>
+          <li ng-repeat='todo in todos'>
+          <span data-ng-bind="todo"></span>
+          <button data-ng-click="remove(todo)">-</button>
+          </li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+    var TodoListController = function ($scope){
+        $scope.todos = ["first","second"];
+        $scope.add = function (todoValue){
+            $scope.todos.push(todoValue);
+        }
+        $scope.remove = function (todo){
+            $scope.todos.splice($scope.todos.indexOf(todo,1));
+        }
+    }
+    TodoListController.$inject = ['$scope'];
+</script>
+</html>
+

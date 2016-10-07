@@ -1,0 +1,2 @@
+DROP TABLE gift_card;
+DROP TABLE gift_card_purchase_order;

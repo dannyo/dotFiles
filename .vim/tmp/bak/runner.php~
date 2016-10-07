@@ -1,0 +1,146 @@
+<?php
+
+require_once './vendor/autoload.php';
+require_once './tests/bootstrap.php';
+require_once __DIR__.'/tests/suites/LoginAndRegistrationTests.php';
+require_once __DIR__.'/tests/suites/CheckOutTests.php';
+require_once __DIR__.'/tests/suites/CategoryTests.php';
+require_once __DIR__.'/tests/suites/SellerListingTests.php';
+require_once __DIR__.'/tests/suites/ProductTests.php';
+require_once __DIR__.'/tests/suites/FullTransactionTests.php';
+require_once __DIR__.'/tests/suites/AccountSettingsTests.php';
+
+
+$classNames = array(
+    'FullTransactionTests',
+    'ProductTests',
+    'CategoryTests',
+    'SellerListingTests',
+    'CheckOutTests',
+    'LoginAndRegistrationTests',
+    'AccountSettingsTests',
+);
+
+$prodTests = array(
+    "CategoryTests" => array(
+        "testCategoryGuest",
+        "testCategoryLoggedIn",
+        "testCategorySocialShare",
+        "testCategorySortBy",
+        "testCategorySideBarFilterByDesigner",
+        "testCategoryItemTextAndItemImagesAndSellerNameText",
+        "testMainNavDropDown",
+        "testClothingDepartmentFilter",
+        "testBagDepartmentFilter",
+        "testShoesDepartmentFilter",
+        "testAccessoriesDepartmentFilter",
+        "testWeddingsDepartmentFilter",
+        "testCategoryPriceFilter",
+        "testCategoryBoutiqueFilter",
+        "testCategoryColorFilter",
+        "testPersistentHeader",
+        "testConditionFilter",
+        "testAvailabilityFilter",
+        "testDiscountFilter",
+        "testSearch",
+        "testAutoCompleteForSearch",
+    ),
+    "SellerListingTests" => array(
+        "testProdSellWeddingDress",
+        "testProdSellBag",
+    ),
+    'ProductTests' => array(
+        "testAddToCartAndRemove",
+        "testSocialShare",
+        "testNoForcedRegModal",
+        "testModalsAsGuest",
+    ),
+    "LoginAndRegistrationTests" => array(
+        "testSignUpSad",
+        "testLoginSad",
+        "testLoginSuccessMain",
+        "testLoginViaCategoryAndProductPage",
+        "testLoginViaWeddingCategoryAndProductPage",
+        "testLoginWithFacebookSuccess",
+        "testResetPassword",
+        "testHomePageImages",
+        "testRegisterWithFacebook",
+        "testLoginFromUserPages",
+    ),
+    "CheckOutTests" => array(
+        "testCheckOutProdUsingTradesyCash",
+        "testRemoveItemFromCart",
+    ),
+    "FullTransactionTests" => array(
+        "testRedirects",
+    ),
+);
+
+$shortopts = "p:";
+
+$longopts = array("skip:");
+
+$options  = getopt($shortopts, $longopts);
+$processes =  array_key_exists("p", $options) ? $options["p"] : 2;
+
+if (array_key_exists("skip", $options)) {
+    $skipTests = explode(',', $options["skip"]);
+} else {
+    $skipTests = array();
+}
+
+function buildTests($classNames, $skipTests)
+{
+    $tests = array();
+    foreach ($classNames as $className) {
+        $methodsNames = get_class_methods($className);
+        foreach ($methodsNames as $methodName) {
+            if (strpos($methodName, 'test') !== false && !in_array($methodName, $skipTests)) {
+                $tests[] = "vendor/phpunit/phpunit/phpunit --filter /$methodName$/ --log-junit tests/log/$methodName.xml tests/suites/$className.php";
+            }
+        }
+    }
+    return $tests;
+}
+
+
+function executeTests($arrayTests, $processes) {
+
+    $queue = array_slice($arrayTests, $processes);
+    $desc = array();
+    $pipes = array();
+
+    foreach (array_slice($arrayTests, 0, $processes) as $test){
+    $runningProcesses[] = proc_open($test, $desc, $pipes);
+    }
+
+    while (count($runningProcesses) !== 0) {
+        sleep(1);
+        $rp = count($runningProcesses);
+        $q = count($queue);
+
+        foreach ($runningProcesses as $index => $process) {
+            if (!proc_get_status($process)["running"]) {
+                unset($runningProcesses[$index]);
+                if ($queue) {
+                    $nextUp = array_pop($queue);
+                    $runningProcesses[] = proc_open($nextUp, $desc, $pipes);
+                }
+            }
+        }
+    }
+}
+
+if (getenv("ENV") == "PROD") {
+    $allTests = array();
+    foreach($prodTests as $className => $methods) {
+        foreach($methods as $method) {
+            $allTests[] = "vendor/phpunit/phpunit/phpunit --filter /$method$/ --log-junit tests/log/$method.xml tests/suites/$className.php";
+        }
+    }
+} else {
+    $allTests = buildTests($classNames, $skipTests);
+}
+
+executeTests($allTests, $processes);
+

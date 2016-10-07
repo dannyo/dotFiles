@@ -1,0 +1,1240 @@
+[
+    {
+        "firstName": "Adam",
+        "lastName": "Kuo",
+        "year": 1,
+        "school": "Biola",
+        "email": "kuodamkuo5@gmail.com"
+    },
+    {
+        "firstName": "Catherine",
+        "lastName": "Li",
+        "year": 1,
+        "school": "Biola",
+        "email": "catherineekli@hotmail.com"
+    },
+    {
+        "firstName": "Marisa",
+        "lastName": "Lim",
+        "year": 1,
+        "school": "Biola",
+        "email": "marz.lim@gmail.com"
+    },
+    {
+        "firstName": "Cordelia",
+        "lastName": "Cheung",
+        "year": 1,
+        "school": "Cal Poly Pomona",
+        "email": "cordeliacheung@yahoo.com"
+    },
+    {
+        "firstName": "Matthew",
+        "lastName": "Ly",
+        "year": 1,
+        "school": "Cal Poly Pomona",
+        "email": "themattly@gmail.com"
+    },
+    {
+        "firstName": "William",
+        "lastName": "Xie",
+        "year": 1,
+        "school": "Cal Poly Pomona"
+    },
+    {
+        "firstName": "Matthew",
+        "lastName": "Li",
+        "year": 1,
+        "school": "Cal Poly San Louis Obispo",
+        "email": "mattli320@gmail.com"
+    },
+    {
+        "firstName": "Gloria",
+        "lastName": "Mah",
+        "year": 1,
+        "school": "CSU Fullerton"
+    },
+    {
+        "firstName": "Kristy",
+        "lastName": "Leung",
+        "year": 1,
+        "school": "CSU Fullerton",
+        "email": "kristyhleung@gmail.com"
+    },
+    {
+        "firstName": "Noel",
+        "lastName": "Wong",
+        "year": 1,
+        "school": "CSU Fullerton",
+        "email": "noelwong17@gmail.com"
+    },
+    {
+        "firstName": "Linda",
+        "lastName": "Ov",
+        "year": 1,
+        "school": "CSU Northridge",
+        "email": "linda_ov@yahoo.com"
+    },
+    {
+        "firstName": "Candace",
+        "lastName": "Louie",
+        "year": 1,
+        "school": "Fullerton Community",
+        "email": "candacelouie@hotmail.com"
+    },
+    {
+        "firstName": "Damian",
+        "lastName": "Au",
+        "year": 1,
+        "school": "Fullerton Community",
+        "email": " Damianau05@gmail.com"
+    },
+    {
+        "firstName": "Andrew",
+        "lastName": "Wong",
+        "year": 1,
+        "school": "Pasadena City"
+    },
+    {
+        "firstName": "Annie",
+        "lastName": "Lee",
+        "year": 1,
+        "school": "Pasadena City",
+        "email": "runitsannie@aim.com"
+    },
+    {
+        "firstName": "Eva",
+        "lastName": "Liu",
+        "year": 1,
+        "school": "Pasadena City",
+        "email": "evaliu_x3@yahoo.com"
+    },
+    {
+        "firstName": "Joanna",
+        "lastName": "Xie",
+        "year": 1,
+        "school": "Pasadena City",
+        "email": "joannaxie952@gmail.com"
+    },
+    {
+        "firstName": "Kington",
+        "lastName": "Tse",
+        "year": 1,
+        "school": "Princeton",
+        "email": "tse.kington@gmail.com"
+    },
+    {
+        "firstName": "Eric",
+        "lastName": "Quang",
+        "year": 1,
+        "school": "San Diego State"
+    },
+    {
+        "firstName": "Megan",
+        "lastName": "Eng",
+        "year": 1,
+        "school": "St. John's University",
+        "email": "mizzsn1ck3rs@yahoo.com"
+    },
+    {
+        "firstName": "James",
+        "lastName": "Ho",
+        "year": 1,
+        "school": "UC Berkeley",
+        "email": "jameshoho@hotmail.com"
+    },
+    {
+        "firstName": "Rochelle",
+        "lastName": "Lai",
+        "year": 1,
+        "school": "UC Berkeley",
+        "email": "rochelle.w.lai@gmail.com"
+    },
+    {
+        "firstName": "Janet",
+        "lastName": "Chan",
+        "year": 1,
+        "school": "UC Irvine",
+        "email": "Janet1995111@yahoo.com"
+    },
+    {
+        "firstName": "Joshua",
+        "lastName": "Chun",
+        "year": 1,
+        "school": "UC Irvine",
+        "email": "lila2ndude@hotmail.com"
+    },
+    {
+        "firstName": "Ryan",
+        "lastName": "Leung",
+        "year": 1,
+        "school": "UC Irvine"
+    },
+    {
+        "firstName": "Virginia",
+        "lastName": "Qi",
+        "year": 1,
+        "school": "UC Irvine",
+        "email": "virginiaqi@yahoo.com"
+    },
+    {
+        "firstName": "Anna",
+        "lastName": "Liu",
+        "year": 1,
+        "school": "UC Riverside",
+        "email": "annaliuu@gmail.com"
+    },
+    {
+        "firstName": "Bryan",
+        "lastName": "Mak",
+        "year": 1,
+        "school": "UC Riverside",
+        "email": "bmak128@gmail.com"
+    },
+    {
+        "firstName": "Bryant",
+        "lastName": "Lew",
+        "year": 1,
+        "school": "UC Riverside",
+        "email": "bryantjlew@gmail.com"
+    },
+    {
+        "firstName": "Irene",
+        "lastName": "Sun",
+        "year": 1,
+        "school": "UC Riverside",
+        "email": "irene.sun13@gmail.com"
+    },
+    {
+        "firstName": "Julianne",
+        "lastName": "Wong",
+        "year": 1,
+        "school": "UC Riverside",
+        "email": "juliannewong@sbcglobal.net"
+    },
+    {
+        "firstName": "Simon",
+        "lastName": "Su",
+        "year": 1,
+        "school": "UC Riverside",
+        "email": "simon.su.710@gmail.com"
+    },
+    {
+        "firstName": "Cory",
+        "lastName": "Wei",
+        "year": 1,
+        "school": "UC San Diego",
+        "email": "cory_wei@yahoo.com"
+    },
+    {
+        "firstName": "Tim",
+        "lastName": "Fong",
+        "year": 1,
+        "school": "UC San Diego",
+        "email": "timfong626@gmail.com"
+    },
+    {
+        "firstName": "Angela",
+        "lastName": "Hugh",
+        "year": 1,
+        "school": "UC Santa Barbara",
+        "email": "angelahugh@verizon.net"
+    },
+    {
+        "firstName": "Matthew",
+        "lastName": "Chee",
+        "year": 1,
+        "school": "UC Santa Barbara"
+    },
+    {
+        "firstName": "Natalie",
+        "lastName": "Wong",
+        "year": 1,
+        "school": "UC Santa Barbara",
+        "email": "nwong715@yahoo.com"
+    },
+    {
+        "firstName": "Anna",
+        "lastName": "Hu",
+        "year": 1,
+        "school": "UCLA",
+        "email": "anna_lax33@yahoo.com"
+    },
+    {
+        "firstName": "Kevin",
+        "lastName": "Zhang",
+        "year": 1,
+        "school": "UCLA",
+        "email": "kzhang719@yahoo.com"
+    },
+    {
+        "firstName": "Emily",
+        "lastName": "Lam",
+        "year": 1,
+        "school": "USC",
+        "email": "emilyjolam@gmail.com"
+    },
+    {
+        "firstName": "Harrison",
+        "lastName": "Quan",
+        "year": 1,
+        "school": "USC",
+        "email": "harrison.quan13@gmail.com"
+    },
+    {
+        "firstName": "Lauren",
+        "lastName": "Lee",
+        "year": 1,
+        "school": "USC",
+        "email": "ltlauren16@sbcglobal.net"
+    },
+    {
+        "firstName": "Leslie",
+        "lastName": "Mar",
+        "year": 1,
+        "school": "Washington State Univ",
+        "email": "leslienoellemar@gmail.com"
+    },
+    {
+        "firstName": "Ashley",
+        "lastName": "Chuck",
+        "year": 1,
+        "school": "Washington University St. Louis",
+        "email": "ashcchuck@yahoo.com"
+    },
+    {
+        "firstName": "Nathan",
+        "lastName": "Elguea",
+        "year": 1,
+        "school": "Moorpark College",
+        "email": "aznchexmix1@gmail.com"
+    },
+    {
+        "firstName": "Alden",
+        "lastName": "Li",
+        "year": 2,
+        "school": "UC Irvine",
+        "email": "bankaiboyz@yahoo.com "
+    },
+    {
+        "firstName": "Alexander",
+        "lastName": "Chu",
+        "year": 2,
+        "school": "UC Berkeley ",
+        "email": "alex.p.chu@gmail.com "
+    },
+    {
+        "firstName": "Angela",
+        "lastName": "Wu",
+        "year": 2,
+        "school": "Biola ",
+        "email": "angela.kay.wu@gmail.com"
+    },
+    {
+        "firstName": "Becky",
+        "lastName": "Mac",
+        "year": 2,
+        "school": "UC Riverside",
+        "email": "beckysmac@yahoo.com "
+    },
+    {
+        "firstName": "Brian",
+        "lastName": "Gonzalez",
+        "year": 2,
+        "email": "marsupio117@yahoo.com "
+    },
+    {
+        "firstName": "Christian",
+        "lastName": "Li",
+        "year": 2,
+        "school": "UC Irvine",
+        "email": "livechristianlike@yahoo.com"
+    },
+    {
+        "firstName": "Clement",
+        "lastName": "Ng",
+        "year": 2,
+        "school": "UC San Diego",
+        "email": "whywouldyoueven@gmail.com"
+    },
+    {
+        "firstName": "Corbin",
+        "lastName": "Quan",
+        "year": 2,
+        "school": "FIDM  ",
+        "email": "abuemfta9001@gmail.com"
+    },
+    {
+        "firstName": "Crystal",
+        "lastName": "Pun",
+        "year": 2,
+        "school": "Biola  ",
+        "email": "alohamunkie@hotmail.com"
+    },
+    {
+        "firstName": "Daniel",
+        "lastName": "Lew",
+        "year": 2,
+        "school": "UC Irvine",
+        "email": "dlewskiii@gmail.com"
+    },
+    {
+        "firstName": "David",
+        "lastName": "Lew",
+        "year": 2,
+        "school": "Cal Baptist University ",
+        "email": "dklew9418@gmail.com"
+    },
+    {
+        "firstName": "Elliott",
+        "lastName": "Lee",
+        "year": 2,
+        "school": "UC Santa Barbara",
+        "email": "lockichu22@gmail.com"
+    },
+    {
+        "firstName": "Eric",
+        "lastName": "Kuan",
+        "year": 2,
+        "school": "Cal Poly Pomona",
+        "email": "Lilboieric@hotmail.com "
+    },
+    {
+        "firstName": "Evelyn",
+        "lastName": "Yeung",
+        "year": 2,
+        "school": "UCLA",
+        "email": "evelyny7@yahoo.com"
+    },
+    {
+        "firstName": "Garrett",
+        "lastName": "Lew",
+        "year": 2,
+        "school": "Cal Poly Pomona",
+        "email": "garrettlew@sbcglobal.net"
+    },
+    {
+        "firstName": "Gregory",
+        "lastName": "Wan",
+        "year": 2,
+        "school": "UC Riverside",
+        "email": "gweegwandoo@gmail.com"
+    },
+    {
+        "firstName": "Jacky",
+        "lastName": "Chan",
+        "year": 2,
+        "school": "Cal State Northridge",
+        "email": "c_chan@att.net "
+    },
+    {
+        "firstName": "Jaclyn",
+        "lastName": "Poon",
+        "year": 2,
+        "email": "Jaclynpoonn@gmail.com"
+    },
+    {
+        "firstName": "Jessica",
+        "lastName": "Tang",
+        "year": 2,
+        "school": "Cal State Los Angeles",
+        "email": "jtang999@hotmail.com"
+    },
+    {
+        "firstName": "Jimmy",
+        "lastName": "Xie",
+        "year": 2,
+        "school": "Cal State Northridge",
+        "email": "migjixxyk@gmail.com"
+    },
+    {
+        "firstName": "Jordan",
+        "lastName": "Mark",
+        "year": 2,
+        "school": "Loyola Marymount University",
+        "email": "w0rm33@yahoo.com "
+    },
+    {
+        "firstName": "Josiah",
+        "lastName": "Yu",
+        "year": 2,
+        "school": "UC Riverside",
+        "email": "josiahasianrock@gmail.com"
+    },
+    {
+        "firstName": "Joyce",
+        "lastName": "Lam",
+        "year": 2,
+        "school": "UC Irvine ",
+        "email": "joycejlam@gmail.com"
+    },
+    {
+        "firstName": "Julie",
+        "lastName": "Xiao",
+        "year": 2,
+        "school": "UC Berkeley "
+    },
+    {
+        "firstName": "Katrina",
+        "lastName": "Wong",
+        "year": 2,
+        "school": "UC Irvine",
+        "email": "khwong24@gmail.com"
+    },
+    {
+        "firstName": "Kenny",
+        "lastName": "Leon",
+        "year": 2,
+        "school": "Cal Poly Pomona",
+        "email": "leon9984@yahoo.com"
+    },
+    {
+        "firstName": "Kenny",
+        "lastName": "Tang ",
+        "year": 2,
+        "school": "ELAC",
+        "email": "Mr_TangKenny@Yahoo.com "
+    },
+    {
+        "firstName": "Kimberlin",
+        "lastName": "Low",
+        "year": 2,
+        "school": "University of the Pacific",
+        "email": "youknowitskimi@gmail.com"
+    },
+    {
+        "firstName": "LeeAnn",
+        "lastName": "Leung",
+        "year": 2,
+        "school": "UC Irvine",
+        "email": "Yanleeannleung@yahoo.com "
+    },
+    {
+        "firstName": "Liana",
+        "lastName": "Wong",
+        "year": 2,
+        "school": "Cal State Northridge",
+        "email": " lianawongsm@gmail.com "
+    },
+    {
+        "firstName": "Michael",
+        "lastName": "Wong",
+        "year": 2,
+        "email": "knuckleballer94@gmail.com"
+    },
+    {
+        "firstName": "Nicole",
+        "lastName": "Chow",
+        "year": 2,
+        "school": "Northern Arizona Univeristy ",
+        "email": "schonnikki@gmail.com"
+    },
+    {
+        "firstName": "Noelle",
+        "lastName": "Chiu",
+        "year": 2,
+        "school": "Cal Poly Pomona",
+        "email": "noellechiu@gmail.com"
+    },
+    {
+        "firstName": "Patty",
+        "lastName": "Quan",
+        "year": 2,
+        "school": "UC Santa Barbara",
+        "email": "phoop43@yahoo.com"
+    },
+    {
+        "firstName": "Priscilla",
+        "lastName": "Zhou",
+        "year": 2,
+        "school": "Cal State Los Angeles",
+        "email": "pz0808@gmail.com"
+    },
+    {
+        "firstName": "Samuel",
+        "lastName": "Law",
+        "year": 2,
+        "school": "UC Irvine",
+        "email": "sam_l@live.com "
+    },
+    {
+        "firstName": "Sierra",
+        "lastName": "Chu",
+        "year": 2,
+        "email": "Sierrachu@live.com"
+    },
+    {
+        "firstName": "Sungwon",
+        "lastName": "Hong",
+        "year": 2,
+        "school": "UC Davis ",
+        "email": "zxv132@hanmail.net "
+    },
+    {
+        "firstName": "Thomas",
+        "lastName": "Yee",
+        "year": 2,
+        "school": "Cal State Northridge",
+        "email": "tjybyu@yahoo.com"
+    },
+    {
+        "firstName": "Tiffany",
+        "lastName": "Lui",
+        "year": 2,
+        "school": "UC Irvine",
+        "email": "L_tiffany3225@yahoo.com"
+    },
+    {
+        "firstName": "Tim",
+        "lastName": "Fong",
+        "year": 2,
+        "school": "UC San Diego",
+        "email": "la128la@yahoo.com"
+    },
+    {
+        "firstName": "Tim",
+        "lastName": "Kong",
+        "year": 2,
+        "school": "Art Institute of Los Angeles ",
+        "email": "halfbakedtim@gmail.com"
+    },
+    {
+        "firstName": "Timothy",
+        "lastName": "Ngo Huynh",
+        "year": 2,
+        "school": "Santa Monica College",
+        "email": "timngohuynh@gmail.com "
+    },
+    {
+        "firstName": "Vicky",
+        "lastName": "Mac",
+        "year": 2,
+        "school": "Pasadena City College",
+        "email": "vickysmac@yahoo.com "
+    },
+    {
+        "firstName": "Wilson",
+        "lastName": "Leong",
+        "year": 2,
+        "school": "Cal Poly Pomona",
+        "email": "leongdrg@yahoo.com "
+    },
+    {
+        "firstName": "Aimee",
+        "lastName": "Wong",
+        "year": 3,
+        "school": "UC Santa Barbara",
+        "email": "wong.aimeeriane@yahoo.com"
+    },
+    {
+        "firstName": "Amy",
+        "lastName": "Kwong",
+        "year": 3,
+        "school": "UC San Diego",
+        "email": "yamk513@yahoo.com"
+    },
+    {
+        "firstName": "Andy",
+        "lastName": "Liao",
+        "year": 3,
+        "school": "UC San Diego",
+        "email": "andywliao@yahoo.com"
+    },
+    {
+        "firstName": "Ashley",
+        "lastName": "Hugh",
+        "year": 3,
+        "school": "UC Irvine"
+    },
+    {
+        "firstName": "Cherise",
+        "lastName": "Chuck",
+        "year": 3,
+        "school": "UCLA",
+        "email": "cherisechuck@gmail.com"
+    },
+    {
+        "firstName": "Cindy",
+        "lastName": "Zhang",
+        "year": 3,
+        "school": "UCLA",
+        "email": "omggitscindyy@yahoo.com"
+    },
+    {
+        "firstName": "Courtney",
+        "lastName": "Lew",
+        "year": 3,
+        "school": "Citrus",
+        "email": "courtneynlew@gmail.com"
+    },
+    {
+        "firstName": "Curtis",
+        "lastName": "Wei",
+        "year": 3,
+        "school": "SLO",
+        "email": "curtis_wei@yahoo.com"
+    },
+    {
+        "firstName": "Daniel",
+        "lastName": "Gong",
+        "year": 3,
+        "school": "UC San Diego",
+        "email": "soccerfrk910@gmail.com"
+    },
+    {
+        "firstName": "Danny",
+        "lastName": "Su",
+        "year": 3,
+        "school": "UCLA",
+        "email": "superchinaman@gmail.com"
+    },
+    {
+        "firstName": "Elaine",
+        "lastName": "Chang",
+        "year": 3,
+        "school": "Cal Poly Pomona",
+        "email": "elainechang9332@yahoo.com"
+    },
+    {
+        "firstName": "Grace",
+        "lastName": "Lee",
+        "year": 3,
+        "school": "University of Washington",
+        "email": "xgrace.leex@gmail.com"
+    },
+    {
+        "firstName": "Grace",
+        "lastName": "Woo",
+        "year": 3,
+        "school": "UCLA",
+        "email": "gracethechemist@yahoo.com"
+    },
+    {
+        "firstName": "Greg",
+        "lastName": "Lum",
+        "year": 3,
+        "school": "UC Davis",
+        "email": "life.of.glum64@gmail.com"
+    },
+    {
+        "firstName": "Ian",
+        "lastName": "Kwok",
+        "year": 3,
+        "school": "UC Irvine",
+        "email": "eeankwack@gmail.com"
+    },
+    {
+        "firstName": "James",
+        "lastName": "Lau",
+        "year": 3,
+        "school": "Cal State Northridge",
+        "email": "jameslau316@yahoo.com"
+    },
+    {
+        "firstName": "Jared",
+        "lastName": "Lau",
+        "year": 3,
+        "school": "UC Irvine",
+        "email": "bball90012@gmail.com"
+    },
+    {
+        "firstName": "Jennifer",
+        "lastName": "Chew",
+        "year": 3,
+        "school": "UCLA",
+        "email": "jennnchew@gmail.com"
+    },
+    {
+        "firstName": "Jennifer",
+        "lastName": "Der",
+        "year": 3,
+        "school": "UC Riverside",
+        "email": "jennder33@yahoo.com"
+    },
+    {
+        "firstName": "Jocelyn",
+        "lastName": "Cui",
+        "year": 3,
+        "school": "UCLA",
+        "email": "littlecuigirl@gmail.com"
+    },
+    {
+        "firstName": "Joy",
+        "lastName": "Lam",
+        "year": 3,
+        "school": "UC Irvine",
+        "email": "thejoylam@gmail.com"
+    },
+    {
+        "firstName": "Justin",
+        "lastName": "Kwok",
+        "year": 3,
+        "school": "SLO",
+        "email": "justeenkwack@gmail.com"
+    },
+    {
+        "firstName": "Justine",
+        "lastName": "Ho",
+        "year": 3,
+        "school": "Occidental",
+        "email": "rabbitlite@hotmail.com"
+    },
+    {
+        "firstName": "Karyn",
+        "lastName": "Wong",
+        "year": 3,
+        "school": "UC San Diego",
+        "email": "itsskaryn@yahoo.com"
+    },
+    {
+        "firstName": "Kristen",
+        "lastName": "Chin",
+        "year": 3,
+        "school": "Cal State Fullerton",
+        "email": "chinesechopstick@verizon.net"
+    },
+    {
+        "firstName": "Megan",
+        "lastName": "Wong",
+        "year": 3,
+        "school": "SLO",
+        "email": "animal_crazy.mw@sbcglobal.net"
+    },
+    {
+        "firstName": "Michael",
+        "lastName": "Ng",
+        "year": 3
+    },
+    {
+        "firstName": "Michael",
+        "lastName": "Poon",
+        "year": 3,
+        "email": "m1k3_poon@yahoo.com"
+    },
+    {
+        "firstName": "Michelle",
+        "lastName": "Chan",
+        "year": 3,
+        "school": "Pepperdine"
+    },
+    {
+        "firstName": "Miles",
+        "lastName": "Young",
+        "year": 3,
+        "school": "SLO",
+        "email": "miles.young@gmail.com"
+    },
+    {
+        "firstName": "Nathaniel",
+        "lastName": "Chiu",
+        "year": 3,
+        "school": "El Camino",
+        "email": "krazymonkeyacho@gmail.com"
+    },
+    {
+        "firstName": "Nathaniel",
+        "lastName": "Tomokiyo",
+        "year": 3,
+        "school": "Cal State Long Beach",
+        "email": "n8thegr801@earthlink.net"
+    },
+    {
+        "firstName": "Omar",
+        "lastName": "Gonzalez",
+        "year": 3,
+        "school": "Cal State Northridge",
+        "email": "marsupio123@yahoo.com"
+    },
+    {
+        "firstName": "Peter",
+        "lastName": "Yuen",
+        "year": 3,
+        "school": "UC Irvine",
+        "email": "rlealilrieks@yahoo.com"
+    },
+    {
+        "firstName": "Ryan",
+        "lastName": "Quon",
+        "year": 3,
+        "school": "SLO",
+        "email": "r_q_1993@yahoo.com"
+    },
+    {
+        "firstName": "Ryan",
+        "lastName": "Yuan",
+        "year": 3,
+        "school": "UC Riverside",
+        "email": "ryanuwon@gmail.com"
+    },
+    {
+        "firstName": "Sherry",
+        "lastName": "Chan",
+        "year": 3,
+        "school": "USC",
+        "email": "sherrylchan1105@gmail.com"
+    },
+    {
+        "firstName": "Stephanie",
+        "lastName": "Li",
+        "year": 3,
+        "school": "Boston University",
+        "email": "stephiroo@gmail.com"
+    },
+    {
+        "firstName": "William",
+        "lastName": "Chan",
+        "year": 3,
+        "school": "UC Santa Cruz",
+        "email": "nintendodude50@hotmail.com"
+    },
+    {
+        "firstName": "Alan",
+        "lastName": "Luu",
+        "year": 4,
+        "email": "axellerate@yahoo.com"
+    },
+    {
+        "firstName": "Alex",
+        "lastName": "Zhang",
+        "year": 4,
+        "school": "Univ. of Dayton",
+        "email": "Alexander-Zhang_918@hotmail.com"
+    },
+    {
+        "firstName": "Alice",
+        "lastName": "Wong",
+        "year": 4,
+        "school": "UCLA",
+        "email": "alice_wong11@yahoo.com"
+    },
+    {
+        "firstName": "Alisa",
+        "lastName": "Wong",
+        "year": 4,
+        "school": "Cal State Long Beach",
+        "email": "awongturn@yahoo.com"
+    },
+    {
+        "firstName": "Andrew",
+        "lastName": "Wong",
+        "year": 4,
+        "school": "Cal Poly Pomona",
+        "email": "the_arkitect@hotmail.com"
+    },
+    {
+        "firstName": "Carolina",
+        "lastName": "Chau",
+        "year": 4,
+        "school": "Cal State Long Beach",
+        "email": "chaucarolina@msn.com"
+    },
+    {
+        "firstName": "Ce Hui",
+        "lastName": "Li",
+        "year": 4,
+        "school": "Pasadena City College",
+        "email": "boupdateds90012@yahoo.com"
+    },
+    {
+        "firstName": "Cecilia",
+        "lastName": "See",
+        "year": 4,
+        "school": "Pasadena City College",
+        "email": "cecilia.see09@gmail.com"
+    },
+    {
+        "firstName": "Cheryl",
+        "lastName": "Yeung",
+        "year": 4,
+        "school": "UC San Diego",
+        "email": "tiffany_snifle@yahoo.com"
+    },
+    {
+        "firstName": "Christopher",
+        "lastName": "Lee",
+        "year": 4,
+        "school": "UC Irvine",
+        "email": "chriscross14@sbcglobal.net"
+    },
+    {
+        "firstName": "Daniel",
+        "lastName": "Li",
+        "year": 4,
+        "school": "Pasadena City College",
+        "email": "meant2live218@gmail.com"
+    },
+    {
+        "firstName": "Elaine",
+        "lastName": "Tam",
+        "year": 4,
+        "school": "UCLA",
+        "email": "elaine_tam91@yahoo.com"
+    },
+    {
+        "firstName": "Emily",
+        "lastName": "SooHoo",
+        "year": 4,
+        "school": "UC Riverside",
+        "email": "pinksoohoo@hotmail.com"
+    },
+    {
+        "firstName": "Enoch",
+        "lastName": "Cheung",
+        "year": 4,
+        "school": "UCLA",
+        "email": "Eenotch@gmail.com"
+    },
+    {
+        "firstName": "Esther",
+        "lastName": "Yue",
+        "year": 4,
+        "school": "USC/Commuters",
+        "email": "esther.charlotte@gmail.com"
+    },
+    {
+        "firstName": "Jacob",
+        "lastName": "Joe",
+        "year": 4,
+        "school": "Cal State Northridge",
+        "email": "JacobJoe@gmail.com"
+    },
+    {
+        "firstName": "Jeremiah",
+        "lastName": "Tam",
+        "year": 4,
+        "school": "Pasadena City College",
+        "email": "tam_Jeremiah@yahoo.com"
+    },
+    {
+        "firstName": "Jessica",
+        "lastName": "Chee",
+        "year": 4,
+        "school": "UC San Diego",
+        "email": "jessicachee08@gmail.com"
+    },
+    {
+        "firstName": "Joey",
+        "lastName": "Ng",
+        "year": 4,
+        "school": "UC San Diego",
+        "email": "missng9392@gmail.com"
+    },
+    {
+        "firstName": "Judy",
+        "lastName": "Gutierrez",
+        "year": 4,
+        "school": "Santa Monica College"
+    },
+    {
+        "firstName": "Kara",
+        "lastName": "Lue",
+        "year": 4,
+        "school": "Cal State Los Angeles",
+        "email": "karamlue@yahoo.com"
+    },
+    {
+        "firstName": "Keith",
+        "lastName": "Wong",
+        "year": 4,
+        "school": "UC Riverside",
+        "email": "crocinusluxfiat@gmail.com"
+    },
+    {
+        "firstName": "Kelly",
+        "lastName": "Mar",
+        "year": 4,
+        "school": "Boston University",
+        "email": "kkellymarr1025@yahoo.com"
+    },
+    {
+        "firstName": "Kimberly",
+        "lastName": "Tsu",
+        "year": 4,
+        "school": "UC Riverside",
+        "email": "mejewelkt@yahoo.com"
+    },
+    {
+        "firstName": "Michelle",
+        "lastName": "Mak",
+        "year": 4,
+        "school": "UC Santa Barbara",
+        "email": "maakchoiyee@gmail.com"
+    },
+    {
+        "firstName": "Nicole",
+        "lastName": "Wong",
+        "year": 4,
+        "school": "SLO"
+    },
+    {
+        "firstName": "Patricia",
+        "lastName": "Yee",
+        "year": 4,
+        "school": "Santa Monica College",
+        "email": "patyeee@yahoo.com"
+    },
+    {
+        "firstName": "Rebecca",
+        "lastName": "Lau",
+        "year": 4,
+        "school": "FIDM",
+        "email": "laurebecca_13@yahoo.com"
+    },
+    {
+        "firstName": "Ryan",
+        "lastName": "Lee",
+        "year": 4,
+        "school": "Los Angeles CC",
+        "email": "ryanglee@yahoo.com"
+    },
+    {
+        "firstName": "Ryan",
+        "lastName": "Lew",
+        "year": 4,
+        "school": "UC San Diego",
+        "email": "hedgehogguy@gmail.com"
+    },
+    {
+        "firstName": "Samantha",
+        "lastName": "Chew",
+        "year": 4,
+        "school": "USC",
+        "email": "sammanthakaye@yahoo.com"
+    },
+    {
+        "firstName": "Samantha",
+        "lastName": "Ho",
+        "year": 4,
+        "school": "UC Irvine"
+    },
+    {
+        "firstName": "Sean",
+        "lastName": "Ishikawa",
+        "year": 4,
+        "school": "UC San Diego",
+        "email": "ski14hs@gmail.com"
+    },
+    {
+        "firstName": "Stephanie",
+        "lastName": "Chow",
+        "year": 4,
+        "school": "UC Irvine",
+        "email": "s.choww@yahoo.com"
+    },
+    {
+        "firstName": "Tammy",
+        "lastName": "Soo Hoo",
+        "year": 4,
+        "school": "UC San Diego",
+        "email": "flyingairplane@hotmail.com"
+    },
+    {
+        "firstName": "Terry",
+        "lastName": "Kong",
+        "year": 4,
+        "email": "waychoi@aol.com"
+    },
+    {
+        "firstName": "Tesia",
+        "lastName": "Au",
+        "year": 4,
+        "school": "UC Riverside",
+        "email": "Tesiaau@gmail.com"
+    },
+    {
+        "firstName": "Ting Ting",
+        "lastName": "Wu",
+        "year": 4,
+        "school": "Santa Monica College",
+        "email": "twistedhartxz@yahoo.com"
+    },
+    {
+        "firstName": "Vivian",
+        "lastName": "Fung",
+        "year": 4,
+        "school": "Cal Poly Pomona",
+        "email": "Panda0292@hotmail.com"
+    },
+    {
+        "firstName": "Winnie",
+        "lastName": "Luong",
+        "year": 4,
+        "school": "UC San Diego",
+        "email": "winnie_luong@yahoo.com"
+    },
+    {
+        "firstName": "Winnie",
+        "lastName": "Ma",
+        "year": 4,
+        "school": "East LA College",
+        "email": "wakoscreamjc@hotmail.com"
+    },
+    {
+        "firstName": "Caleb",
+        "lastName": "Wong",
+        "year": 5,
+        "email": "azneph611@yahoo.com"
+    },
+    {
+        "firstName": "Chris",
+        "lastName": "Wong",
+        "year": 5,
+        "school": "Cal State Long Beach",
+        "email": "cbwongster@gmail.com"
+    },
+    {
+        "firstName": "Henry",
+        "lastName": "Ip",
+        "year": 5,
+        "school": "Ohio St. University",
+        "email": "henryip225@gmail.com"
+    },
+    {
+        "firstName": "Michael",
+        "lastName": "Phy",
+        "year": 5,
+        "school": "UCLA",
+        "email": "micphy@gmail.com"
+    },
+    {
+        "firstName": "Peter",
+        "lastName": "Tang",
+        "year": 5,
+        "school": "Pasadena City College",
+        "email": "Ptang_2@yahoo.com"
+    },
+    {
+        "firstName": "Robert",
+        "lastName": "Tang",
+        "year": 5,
+        "school": "UC Riverside",
+        "email": "ndrobertsaid@gmail.com"
+    },
+    {
+        "firstName": "Samuel",
+        "lastName": "Ordonia",
+        "year": 5,
+        "school": "UC Berkeley",
+        "email": "samuel.ordonia@hotmail.com"
+    },
+    {
+        "firstName": "Valerie",
+        "lastName": "Ky",
+        "year": 5,
+        "school": "UC Irvine",
+        "email": "valerieky@gmail.com"
+    },
+    {
+        "firstName": "Jimmy",
+        "lastName": "Tang",
+        "year": 6,
+        "school": "Cal State Los Angeles",
+        "email": "dreamer873556@yahoo.com"
+    },
+    {
+        "firstName": "Jonathan",
+        "lastName": "Chan",
+        "year": 6,
+        "school": "Pasadena City College",
+        "email": "jonathanpchan@gmail.com"
+    }
+]

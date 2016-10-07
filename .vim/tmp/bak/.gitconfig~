@@ -1,0 +1,74 @@
+[user]
+  name = danny
+	email = dannyorh@gmail.com
+[alias]
+  ad    = add -A
+  co    = checkout
+  cc    = !git checkout "$(git rev-parse --show-toplevel)" && git clean -fd "$(git rev-parse --show-cdup)"
+  cf    = cat-file -p
+  rf    = rm -f                                  ; delete force (for files)
+  rr    = rm -r                                  ; delete recursively (for directories)
+  rs    = rm --cached                            ; delete from staging
+  st    = status
+  ci    = !git add -A "$(git rev-parse --show-cdup)" && git commit -av
+  ca    = commit --amend                         ; amend the tip of the current branch 
+  br    = checkout -b                            ; create a new branch and switch to it
+  ms    = checkout master
+  mg    = merge
+  ch    = diff --name-status -r
+  df    = diff
+  ds    = diff --staged
+  dm    = difftool --tool=mvimdiff
+  dv    = difftool --tool=vimdiff
+  po    = push origin
+  ph    = push heroku
+  lg    = log -p                                 ; show log with diffs (add -x to show only the x most recent entries)
+  lo    = log --decorate --pretty=oneline        ; show one line log
+  ls    = log --decorate --pretty=oneline --stat
+  fw    = log --follow                           ; file commit history needs to be followed by a file path
+  lf    = ls-files -s
+  lr    = ls-remote
+  gb    = gui blame                              ; gui interface to git blame needs to be followed by a file path
+  rh    = reset HEAD --
+  su    = stash                                  ; stash push
+  so    = stash pop                              ; stash pop
+  last  = log -p -1 HEAD
+  undo  = reset --hard HEAD~
+  alias = !cat ~/.gitconfig | awk '/^  [a-z]+(    |  )=/'
+[core]
+  editor = mvim -f
+  excludesfile = ~/.gitignore
+[mirror]
+  summary = true
+[branch]
+  autosetupmerge = true
+[help]
+  autocorrect = 1
+[push]
+  default = matching
+[color]
+  ui = auto
+  branch = auto
+  status = auto
+  diff = auto
+[color "diff"]
+  meta = yellow
+  frag = cyan
+  old = red
+  new = green
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "status"]
+  added = blue
+  changed = green
+  untracked = cyan
+[github]
+	user = danny
+[difftool "vimdiff"]
+  cmd = vimdiff
+[difftool "mvimdiff"]
+  cmd = ~/mvimdiff.sh $LOCAL $REMOTE
+[difftool]
+	prompt = false

@@ -1,0 +1,59 @@
+"1.0b7.2 "(created 2011/08/05 11:03:59)"
+
+loadplugins '\.(js|penta)$'
+group user
+highlight Bell background-color: inherit; border: 0 none;
+highlight Boolean color: #dca3a3;
+highlight BufTab padding: 0 2px;
+highlight BufTabs margin: 0 4px; overflow: hidden;
+highlight BufTabSelected color: #2e3330; background-color: #88b090; padding: 0 4px;
+highlight Cmd background-color:#313633; font-size:9pt;
+highlight CmdLine padding: 0 3px; font-weight: normal !important; color: inherit; background: inherit;
+highlight CompDesc color: inherit; width: 50%; padding-left: 1em; font-size: 8pt;
+highlight CompGroup color: inherit; font-weight: bold !important;
+highlight CompIcon width: 16px; min-width: 16px; display: none; margin-right: .5ex;
+highlight CompItem color: inherit; background: inherit; font-weight: bold !important;
+highlight CompItem[selected] background: #aaaaaa; background-color: #4c504d !important; color: #000000 !important; font-weight: bold !important;
+highlight 'CompItem[selected] Filter' color: #00468f !important;
+highlight 'CompItem[selected] Object' color: #00468f !important;
+highlight CompLess text-align: center; height: 0; line-height: .5ex; padding-top: 1ex; margin-top: .5ex; margin-bottom: 1ex;
+highlight CompMore text-align: center; height: .5ex; line-height: .5ex; margin-bottom: -.5ex; margin-top: .5ex;
+highlight CompResult width: 45%; padding-right: 1%; overflow: hidden; font-size: 8pt; font-family: monospace; font-weight: normal;
+highlight CompTitle color: #ffffff !important; background: #000000 !important; font-weight: bold !important; background-color: transparent;
+highlight CompTitleSep height: 1px; background: -moz-linear-gradient(0deg, #000000, #cccccc);
+highlight ErrorMsg color: red !important; background-color: #2f2f2f !important; font-weight: bold; font-size: 9pt; background: inherit !important;
+highlight Filter font-weight: bold; font-style: normal; color: #00bfff !important;
+highlight FrameIndicator background-color: #222222; opacity: 0.6; z-index: 999; position: fixed; top: 0; bottom: 0; left: 0; right: 0;
+highlight Function color: green !important; background: inherit !important;
+highlight Hint font-family: Sans; font-size: 11px !important; font-weight: bold !important; color: #ffffff !important; background-color: rgba(0, 0, 0, 0.7) !important; border: solid 1px #000000 !important; position: absolute !important;
+highlight Hint::after content: attr(number);
+highlight HintActive background: #4682b4 !important; color: #ffffff !important;
+highlight HintElem background-color: inherit !important;
+highlight Indicator color: #8b0000 !important; width: 4px; text-align: center; font-weight: bold;
+highlight InfoMsg color: inherit !important; background: inherit !important;
+highlight Keyword color: #f0dfaf; font-weight: bold;
+highlight LineNr color: red !important; background: inherit !important; background-color: #262626;
+highlight Message white-space: normal; min-width: 100%; width: 100%; padding-left: 2em; text-indent: -2em; display: block; color: inherit !important; background: inherit !important; font-weight: bold;
+highlight ModeMsg color: inherit !important; background: inherit !important; background-color: transparent !important; font-weight: bold !important;
+highlight MoreMsg color: inherit !important; background: inherit !important; background-color: inherit !important; font-weight: bold;
+highlight NonText color: lightblue !important; background: transparent !important; font-weight: bold; min-height: 16px; padding-left: 2px;
+highlight Normal color: #ffffff; background-color: #313633 !important; font-size: 9pt; background: #111111; font-weight: normal !important;
+highlight Number color: #8cd0d3;
+highlight Object color: orange !important; background: inherit !important;
+highlight Question color: inherit !important; background-color: inherit !important; font-weight: bold; background: inherit !important;
+highlight Search font-size: inherit !important; padding: 0; color: inherit !important; background-color: yellow;
+highlight StatusLineBroken color: #000000 !important; background-color: #afafff !important;
+highlight StatusLineExtended color: #000000 !important; background-color: #afffaf !important;
+highlight StatusLineNormal color: #ffffff !important; background: black   !important; background-color: #000000 !important; margin-bottom: -2px; font-size: 9pt; font-weight: bold !important;
+highlight StatusLineSecure color: #000000 !important; background-color: #afffaf !important;
+highlight String color: #cc9393; white-space: pre;
+highlight Tag color: inherit !important; font-weight: bold; background: inherit !important;
+highlight Title color: inherit !important; font-weight: bold; background-color: inherit; background: inherit !important;
+highlight URL text-decoration: none; color: inherit; background: inherit; background-color: inherit;
+highlight WarningMsg color: red !important; background-color: #333333 !important; font-weight: bold; background: inherit !important;
+map -modes=n,v k -builtin <count>9k
+map -modes=n,v j -builtin <count>9j
+set guioptions=Nbrs
+set showtabline=never
+
+" vim: set ft=pentadactyl:

@@ -1,0 +1,731 @@
+" .vimrc
+" author: Gabriel <gabesoft@gmail.com>
+
+" preamble ---------------------------------------------------------------------
+filetype off
+call pathogen#runtime_append_all_bundles()
+filetype plugin on
+set nocompatible
+
+let mapleader=","
+let $VIMHOME=expand('<sfile>:p:h')
+
+" platform specific ------------------------------------------------------------
+if has("win32")
+  let $VIMHOME=expand('$VIMHOME/vimfiles')
+  set gfn=Monaco:h10:cANSI
+elseif has("macunix")
+  let $VIMHOME=expand('$VIMHOME/.vim')
+  set gfn=Monaco:h12
+  let g:Grep_Xargs_Options='-0'       " disable xargs
+  if has("gui")
+    set macmeta                       " enable the alt key on mac
+  endif
+else
+  let $VIMHOME=expand('$VIMHOME/.vim')
+  set gfn=Monaco\ 12
+endif
+
+" sources ----------------------------------------------------------------------
+source $VIMHOME/abbreviations.vim
+source $VIMHOME/python/autotag.vim
+source $VIMHOME/functions.vim
+
+" make tmp dir if it doesn't exist
+call MkDir($VIMHOME . "/tmp")
+
+" directories ------------------------------------------------------------------
+set backupdir=$VIMHOME/tmp      " backup directory
+set directory=$VIMHOME/tmp      " swap directory
+set undodir=$VIMHOME/tmp        " undo directory
+set viewdir=$VIMHOME/tmp/views  " views directory
+
+" make vim able to edit crontab files again ------------------------------------
+set backupskip=/tmp/*,/private/tmp/*"
+
+" dictionary -------------------------------------------------------------------
+"set dictionary-=/usr/share/dict/words
+"set dictionary+=$VIMHOME/dict/en_US.dic
+
+" don't change directories on file open
+set noautochdir
+
+" use a tags file if any exists
+set tags=tags
+
+" update the system clipboard when copying and pasting
+set clipboard=unnamed
+
+"set foldmethod=manual
+"set foldlevelstart=1
+
+" color scheme
+color nazca
+set background=dark
+
+sdlf
+" show line numbers
+set number
+" highlight syntax
+syntax on
+
+" diff should split vertically
+set diffopt=vertical
+
+" notify of changes
+set report=0
+
+" show partial command (or size of the selected area in visual mode) in status bar
+set showcmd
+" show mode in status bar
+set showmode
+" status bar
+set statusline=%F%m%r%h%w\ %n:%{&ff}:%Y\ L=%04l/%L[%p%%]\ C=%04c/%{len(getline(line(\".\")))}\ %{&wrap?'w':'\ '}\ %{&diff?'d':'\ '}
+
+" status bar (0=never, 1=default, 2=always)
+set laststatus=2
+
+set backup
+set undofile
+set foldenable
+
+set ruler
+set noerrorbells
+set mousehide
+
+" set output encoding (as opposed to fileencoding)
+set encoding=utf-8
+
+" whitespace and indenting -----------------------------------------------------
+set linebreak                                     " wrap at word
+set showbreak=‚Ü™
+set listchars=tab:‚ñ∏\ ,eol:¬¨,extends:‚ùØ,precedes:‚ùÆ  " set non-printable characters
+set nolist                                        " don't show non-printable characters
+set nowrap
+set expandtab
+set smarttab
+set autoindent
+set smartindent
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+
+" match brackets
+set showmatch
+set mat=2         " duration to show matching bracket
+
+" tab completion ---------------------------------------------------------------
+set wildmenu
+set wildmode=list:longest,list:full
+
+" wildignore (also used by command-t)
+set wildignore+=*.o,*.obj,.git,*rbc,*.class,.svn,vendor/gems/*,node_modules
+
+
+set guioptions=   " set guioptions=aegirLtb
+set lazyredraw
+
+" hide tabs
+set showtabline=0
+
+" sets what is saved when saving a session
+set sessionoptions=blank,buffers,curdir,folds,help,resize,tabpages,winsize
+
+" command history items
+set history=2000
+" command window height
+set cmdwinheight=20
+
+
+set title
+set scrolloff=3
+set backspace=indent,eol,start
+
+" file settings
+" to show current filetype use ':set filetype'
+filetype on
+filetype indent on
+filetype plugin indent on
+
+set hlsearch
+set ignorecase
+set incsearch
+set smartcase
+set nogdefault
+
+set completeopt=longest,menuone,preview
+
+" buffer settings --------------------------------------------------------------
+" allow hide unsaved buffers
+set hidden
+
+" multiple windows when created are equal in size
+set equalalways
+set splitbelow splitright
+
+" 80 column marker
+" set colorcolumn=80,120        " turn on
+" set colorcolumn=0             " turn off
+" hi ColorColumn guibg=#2d2d2d
+" hi ColorColumn guibg=#111111
+" hi ColorColumn guibg=brown
+" hi ColorColumn guibg=black
+
+" highlight the background for text that goes over the 80 column limit
+" hi OverLength ctermbg=red ctermfg=white guibg=#592929
+" match OverLength /\%81v.\+/
+
+" plugin settings
+" --------------------------------------------------------------------------------
+" plugins shortcuts
+" ds x      : removed wrapped x around the word with the cursor
+" yss x     : wrap current line with x (command)
+" ySS x     : wrap current line with x where x is on a new line (command)
+" s x       : wrap selection with x (visual)
+" <C-s> x   : output open and closing x (insert)
+
+" <C-Y>,    : zen-coding expand
+" ,cSPACE   : toggle comment
+
+
+" nerd-tree
+" ----------------------------------------
+" ,n        : toggle nerd tree
+" ,nf       : nerd tree find
+" ,nc       : nerd tree close
+let NERDTreeIgnore=['\.pyc$', '\.rbc$', '\~$']
+let NERDTreeWinPos='right'
+let NERDTreeWinSize=35
+let NERDTreeDirArrows=1
+let NERDTreeShowLineNumbers=1
+let NERDTreeShowHidden=0
+let NERDTreeChristmasTree=1
+let NERDTreeHighlightCursorline=1
+map <leader>n  :NERDTreeToggle<CR>
+map <leader>nf :NERDTreeFind<CR>
+map <leader>nc :NERDTreeClose<CR>
+
+" command-t
+" ----------------------------------------
+" ,T        : flush command-t
+" ,t        : fuzzy find files
+" ,b        : fuzzy find buffers
+let g:CommandTMaxHeight=20
+let g:CommandTAlwaysShowDotFiles=1
+nmap <leader>t :CommandT<CR>
+nmap <leader>b :CommandTBuffer<CR>
+nmap <leader>T :CommandTFlush<CR>
+
+" fuzzy-finder
+" ----------------------------------------
+" ,f        : fuzzy find files with fuzzy-finder
+" ,B        : fuzzy find buffers with fuzzy-finder
+nmap <leader>f :FufFile<CR>
+nmap <leader>B :FufBuffer<CR>
+
+" grep
+" ----------------------------------------
+" ,/        : find in files
+" ,\        : find in buffers
+nnoremap <leader>/ :Rgrep<CR>
+nnoremap <leader>\ :Bgrep<CR>
+
+" zoom win
+" ----------------------------------------
+" ,,        : toggle maximize active buffer
+map <leader><leader> :ZoomWin<CR>
+
+" zen-coding pluggin settings
+" ----------------------------------------
+let g:use_zen_complete_tag=1
+
+" vim-space settings (to avoid conflicts with snipmate)
+" ----------------------------------------
+let g:space_disable_select_mode = 1
+
+" mru (file history)
+" ----------------------------------------
+" ,m        : opens the most recently used window
+let g:MRU_File = expand('$VIMHOME/tmp/mru_files')
+let g:MRU_Max_Entries = 100
+let g:MRU_Exclude_Files = 'COMMIT_EDITMSG\|^\/var\/folders\/kd\/.*\|^\/Users\/gabesoft\/dotfiles\/.*\|__MRU_Files__\|NERD_tree'
+let MRU_Window_Height = 20
+nmap <leader>m :MRU<CR>u
+
+" jslint
+if executable('node')
+  let g:JSListCmd = 'node'
+endif
+
+" neocomplcache
+" -------------
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+"let g:acp_enableAtStartup = 1
+" Use neocomplcache.
+let g:neocomplcache_enable_at_startup = 1
+"let g:neocomplcache_enable_at_startup = 0
+" Use smartcase.
+let g:neocomplcache_enable_smart_case = 1
+" Use camel case completion.
+let g:neocomplcache_enable_camel_case_completion = 1
+" Use underbar completion.
+let g:neocomplcache_enable_underbar_completion = 1
+" Set minimum syntax keyword length.
+let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_enable_fuzzy_completion = 1
+
+"let g:neocomplcache_enable_auto_select = 1
+
+" Plugin key-mappings.
+imap <C-K>     <Plug>(neocomplcache_snippets_expand)
+smap <C-K>     <Plug>(neocomplcache_snippets_expand)
+inoremap <expr><C-G>     neocomplcache#undo_completion()
+inoremap <expr><C-L>     neocomplcache#complete_common_string()
+
+" <CR>: close popup and save indent.
+inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+inoremap <expr><C-y>  neocomplcache#close_popup()
+inoremap <expr><C-e>  neocomplcache#cancel_popup()
+
+" yank ring
+" ---------
+nnoremap <silent> <F11> :YRShow<CR>
+
+" key remapings
+" ------------------------------------------------------------------------------
+
+noremap  <F1> :set invfullscreen<CR>
+inoremap <F1> <ESC>:set invfullscreen<CR>a
+
+nnoremap K <nop>
+
+" ;= : align assignments 
+nmap <silent> <leader>= :call AlignAssignments()<CR>
+
+" CTRL-SPACE  : smart completion (insert mode)
+inoremap <C-SPACE> <C-R>=SmartSpace()<CR>
+
+" CTRL-SPACE  : scroll up
+" ALT-SPACE   : scroll down
+nnoremap <C-SPACE> 9<C-e>
+nnoremap <M-SPACE> 9<C-y>
+
+" CTRL-J    : jump to <+PLACEHOLDER+> (for template files)
+nnoremap <C-J> /<+.\{-1,}+><CR>c/+>/e<CR>
+inoremap <C-J> <ESC>/<+.\{-1,}+><CR>c/+>/e<CR>
+
+" higlight cursor line and column
+nnoremap <leader>c :set cursorline! cursorcolumn!<CR>
+
+" exit to normal mode with jj
+inoremap jj <ESC>
+
+" moving lines
+" Alt-J: move line or selected block down
+" Alt-K: move line or selected block up
+nnoremap <A-j> :m+<CR>==
+nnoremap <A-k> :m-2<CR>==
+inoremap <A-j> <ESC>:m+<CR>==gi
+inoremap <A-k> <ESC>:m-2<CR>==gi
+vnoremap <A-j> :m'>+<CR>gv=gv
+vnoremap <A-k> :m-2<CR>gv=gv
+
+" ,W: strips all trailing whitespaces in current file (preserves cursor position)
+nnoremap <leader>W mm:%s/\s\+$//<CR>:let @/=''<CR>'m
+
+" ,g: toggle search highlighting
+map <leader>g :set hlsearch!<CR>
+
+map <tab> %
+
+" color schemes
+map <leader>1 :colorscheme gummybears<CR>
+map <leader>2 :colorscheme ir_black_ext<CR>
+map <leader>3 :colorscheme molokai<CR>
+map <leader>4 :colorscheme rootwater<CR>
+map <leader>5 :colorscheme vividchalk<CR>
+
+" toggle non-printable characters visibility
+map <leader>s :set nolist!<CR>
+
+" toggle text wrap
+map <M-F5> :set nowrap! <CR>
+
+" toggle menu and toolbar
+map <silent> <C-F2> :if &go=~#'T'<Bar>set go-=T<Bar>set go-=m<Bar>else<Bar>set go+=T<Bar>set go+=m<Bar>endif<CR>
+
+" search settings
+" /         : search
+" ALT-/     : search and replace
+" ,/        : find in files (using plugins)
+" ,\        : find in buffers (using plugins)
+" :%s/term/repl/flags (g,c,i,I)
+" g=global, c=ask for confirmation, i=case insensitive, I=case sensitive
+map <M-/> :%s/
+"nnoremap n nzv:call PulseCursorLine()<cr>
+"nnoremap N Nzv:call PulseCursorLine()<cr>
+
+" gt : cycle through buffers forward
+nmap gt :bnext<CR>
+nmap <C-TAB> :bnext<CR>
+" gT : cycle through buffers backward
+nmap gT :bprev<CR>
+nmap <S-C-TAB> :bprev<CR>
+
+" ,d : close the current buffer
+nmap <leader>d :bw<CR>
+" ,D : close all buffers and quit vim
+nmap <leader>D :qa<CR>
+" ,w : save active buffer
+nmap <leader>w :w<CR>
+" ,e : new file
+nmap <leader>e :e
+" ,p : navigate to previous buffer
+nmap <leader>p <C-^>
+
+" move between windows
+map <leader>k :wincmd k<CR>
+map <leader>j :wincmd j<CR>
+map <leader>h :wincmd h<CR>
+map <leader>l :wincmd l<CR>
+
+" vertical and horizontal split then hop to a new buffer
+" ,H = new horizontal window
+" ,V = new vertical window
+noremap <leader>V :vsplit<CR>
+noremap <leader>H :split<CR>
+
+" window resizing
+" _-            : resize horizontal windows
+nmap - <C-W>-
+nmap _ <C-W>+
+" ALT _-        : resize vertical windows
+nmap <M--> <C-W><
+nmap <M-_> <C-W>>
+" ALT =         : make windows equal
+nmap <M-=> <C-W>=
+
+" reverse characters in insert mode
+imap <silent> <C-T> <ESC>hxpa
+
+" prevent accidental undo in insert mode
+inoremap <C-U> <C-G>u<C-U>
+inoremap <C-W> <C-G>u<C-W>
+
+" indentation (preserves cursor position)
+map <silent> <F6> mmgg=G'mzz
+imap <silent> <F6> <ESC> mmgg=G'mzz
+
+" ,# : add line numbers to selected lines
+vmap <leader># :s/^/\=(line(".") - line("'<") + 1).".\t"/<CR>
+" ,@ : add line numbers to mark a
+map <leader>@ :'a,.s/^/\=(line(".") - line("'a") + 1).".\t"/<CR>
+
+nnoremap <leader>R :Rain
+
+" insert a new line without entering in insert mode
+nmap <S-ENTER> O<ESC>j
+nmap <CR> o<ESC>k
+
+" auto commands
+" ------------------------------------------------------------------------------
+
+" resize splits when the window is resized
+autocmd VimResized * exe "normal! \<c-w>="
+
+" no backup for crontab files
+autocmd FileType crontab set nobackup nowritebackup
+autocmd FileType crontab colorscheme vividchalk
+
+" reset global color settings on file type change
+autocmd ColorScheme,FileType * call GlobalColorSettings()
+
+" omni completion
+autocmd FileType c set omnifunc=ccomplete#Complete
+autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+autocmd FileType python set omnifunc=pythoncomplete#Complete
+autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
+autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+autocmd FileType java set omnifunc=javacomplete#Complete
+
+" auto save on losing focus
+autocmd BufLeave * silent! :wa
+autocmd FocusLost * silent! :wa
+
+" json syntax higlighting
+autocmd BufNewFile,BufRead *.json set ft=javascript
+autocmd BufNewFile,BufRead *.jsb3 set ft=javascript
+
+" json format
+" only works after running one time in terminal > sudo cpan JSON::XS
+autocmd FileType javascript nnoremap <F7> <ESC>:%!json_xs -f json -t json-pretty<CR>
+autocmd FileType json nnoremap <F7> <ESC>:%!json_xs -f json -t json-pretty<CR>
+
+" autotest
+autocmd BufNewFile,BufRead .autotest setfiletype ruby
+
+" compiler
+autocmd FileType ruby nnoremap <F5> <ESC>:w<CR> :!ruby %<CR>
+autocmd FileType java nnoremap <F5> <ESC>:w<CR> :!ant build > build.log<CR><ESC>:sp build.log<CR>
+autocmd FileType java nnoremap <F7> <ESC>:w<CR> :!ant test > test.log<CR><ESC>:sp test.log<CR>
+
+" xml
+" break into individual lines
+autocmd FileType xml nnoremap <F7> :%s/<\([^>]\)*>/\r&\r/g<enter>:g/^$/d<enter>vat=
+autocmd FileType xml nnoremap <F8> vatJxvito<right><left>x
+" put xml node and content on the same line
+autocmd FileType xml nnoremap <F9> /\v^\s*([a-zA-Z\-0-9\$])<enter>qm<F6>nq@q1000@@:1<enter>
+
+" java tags (multiple files can be specified comma separated)
+autocmd FileType java set tags=tags,$VIMHOME/tags/java.tags
+
+" javascript tags (multiple files can be specified comma separated)
+autocmd FileType javascript set tags=tags,$VIMHOME/tags/javascript.tags
+
+" coffee-script view javascript code
+autocmd FileType coffee nnoremap <C-M-V> :CoffeeView<CR>
+" auto-compile coffee files when saved
+autocmd BufWritePost,BufLeave,FocusLost *.coffee silent CoffeeMake -b | cwindow
+
+" ,U : capitalize every word of a sentence
+autocmd Filetype txt nnoremap <leader>U :%s/[.!?]\_s\+\a/\U&\E/g<CR>
+
+" load a template if any exists for the current file type
+autocmd BufNewFile * silent! 0r $VIMHOME/templates/%:e.tpl
+
+" mark placeholders in template files (remove with :match none)
+autocmd BufNewFile * match Todo /<+.\++>/
+
+" save / restore current buffer view
+autocmd BufWinLeave * silent! mkview
+autocmd BufWinEnter * silent! loadview
+
+" change color scheme on vim diff
+autocmd FilterWritePre * if &diff | colorscheme rootwater | endif
+
+" cheat sheet
+" ------------------------------------------------------------------------------
+" :so %       : reload this settings file from vim
+" gg=G (or F6): format entire file
+
+" navigation
+" ----------------------------------------
+" :jumps      : see entire jumplist
+" <C-o>       : jump backward in the jumplist
+" <C-i>       : jump forward in the jumplist
+" ''          : jump to previous location
+"
+" :changes    : see entire changelist
+" g;          : jump backward in the changelist
+" g,          : jump forward in the changelist
+" gd          : jump to variable declaration (Goto Declaration)
+" gD          : jump to global variable declaration
+" gf          : jump to the file under cursor (Goto File)
+"
+" [{          : jump to start { in current block
+" ]}          : jump to end { in current block
+" {           : jump to beginning of current paragraph
+" }           : jump to end of current paragraph
+" (           : jump to beginning of current sentence
+" )           : jump to end of current sentence
+
+" tags + code navigation
+" ----------------------------------------
+" use ctags   : ctags -R . (run in shell - creates a tags file with ctags)
+"             : run :set tags=/path/to/tags in vim to source the tags file
+" <C-]>       : jump to definition
+" <C-T>       : jump back to previous location
+
+" editing + motions
+" ----------------------------------------
+" s           : replace a character (insert mode)
+" r           : replace a character (command mode)
+" R           : enter replace mode
+"
+" w|W         : move to the beginning of the next word|WORD
+" b|B         : move to the beginning of the previous word|WORD
+" e|E         : move to the end of the word|WORD
+"
+" c <motion>  : change according to motion
+" c/<pat>/    : change until pat
+" c/<pat>/e   : change until end pat
+" cw          : change word
+" C           : change the rest of the line
+"
+" d <motion>  : delete according to motion
+" d/<pat>/    : delete until pattern
+" dw          : delete word
+" D           : delete the rest of the line
+"
+" x           : delete the char under cursor and stay in normal mode
+" s           : delete the char under cursor and enter insert mode
+" S           : change the entire line
+"
+" y <motion>  : yank according to motion
+" y/<pat>/    : yank until pat
+"
+" J           : merge current line with the one below
+
+" pasting
+" ----------------------------------------
+" p           : paste content after the character under cursor (or line)
+" P           : paste content before the character under cursor (or line)
+" C-R-"a      : paste on the command line from register a
+" "1pu.u. etc : cycle through the contents of the deletion buffers
+
+" entire lines
+" ----------------------------------------
+" yy|Y        : copy entire line
+" dd          : delete entire line
+" cc          : change entire line
+
+" undoing changes
+" ----------------------------------------
+" u           : undo last change
+" g-          : navigate backward through branch changes
+" g+          : navigate forward through branch changes
+
+" marks
+" ----------------------------------------
+" ma          : mark a
+" 'a          : recall mark a (goes to the beginning of the line)
+" `a          : recall mark a (goes to the exact location where the mark was set)
+
+" macros
+" ----------------------------------------
+" qa          : start recording macro into register a
+" q           : end recording if any in progress
+" @a          : run macro recorded from register a
+" @@          : run last macro
+
+" xp          : transpose characters
+
+" motions
+" ----------------------------------------
+" w           : word motion
+" l           : one symbol motion
+" f <char>    : up to and including <char>
+" t <char>    : up to and not including <char>
+
+" capitalizing
+" ----------------------------------------
+" gU          : make upper case
+" gu          : make lower case
+
+" folding commands
+" ----------------------------------------
+" zf#j        : creates a fold from the cursor down # lines
+" zf          : creates a fold for the selected lines (visual mode)
+" zf'a        : creates a fold from current cursor position to mark a
+" zf/string   : creates a fold from the cursor to string
+" zj          : moves the cursor to the next fold
+" zk          : moves the cursor to the previous fold
+" zo          : opens a fold at the cursor
+" zO          : opens all folds at the cursor
+" zc          : closes a fold
+" zm          : increases the foldlevel by one
+" zM          : closes all open folds
+" zr          : decreases the foldlevel by one
+" zR          : decreases the foldlevel to zero -- all folds will be open
+" zd          : deletes the fold at the cursor
+" zE          : deletes all folds
+" [z          : move to start of open fold
+" ]z          : move to end of open fold
+
+" using vim as a word processor
+" ----------------------------------------
+" z=          : spelling suggestions
+" [s          : previous misspelling
+" ]s          : next misspelling
+" zg          : add current word to dictionary
+" zug         : undo adding current word to dictionary
+" :wp         : enter word processing mode
+" gqap        : format current paragraph
+" gggqG       : format all text in current file
+
+" abbreviations
+" ----------------------------------------
+"  ab         : list all abbreviations
+"  una <abbr> : remove abbr from the abbreviations list
+"  abc        : clear all abbreviations
+"  <abbr><C-V>: avoid abbreviation expansion
+
+" numbers
+" ----------------------------------------
+" C-A         : increment the number under cursor
+" C-X         : decrement the number under cursor
+
+" g<C-G>      : stats about the selected region (visual mode)
+
+" autocompletion
+" ----------------------------------------
+" C-N         : search a matching word forward
+" C-P         : search a matching word backward
+" C-X C-K     : dictionary completion (a dictionary file needs to be set up)
+" C-X C-O     : omni completion
+
+" movement
+" ----------------------------------------
+" zt          : move the line with cursor to top
+" zz          : move the line with cursor to middle
+" zb          : move the line with cursor to bottom
+
+" diff
+" ----------------------------------------
+" vert diffsplit file.v2 (after opening file.v1) to compare v1 with v2
+" ]c          : go to start of next change
+" [c          : go to start of previous change
+" :diffoff    : end diff mode
+" :diffthis   : turn on diff mode (the two files to be diffed should be opened)
+
+" ex editor commands (multiple can be separated by |)
+" ----------------------------------------
+" :% g|v/re/d|s|m|j|t
+" - g all lines matching regex
+" - v all lines not matching regex
+" - d delete, s substitute, m move, j join, t copy
+"   - m and t expect an address where to move/copy the selected lines
+"   - ex m$, t4
+" - line addresses:
+"   - % = all
+"   - . = current
+"   - $ = last
+"   - 1 = first
+"   - x,y = from x to y
+"   - .-2 = 2 lines above current
+" examples:
+" :% g/foo/d
+"   - delete all lines containing 'foo'
+" :% g/^foo/m$
+"   - move all lines that start with 'foo' to the end of the file
+" :% g/foo/s/bar/zz/g
+"   - substitute 'zz' for 'bar' in all lines containing 'foo'
+"
+" :r  <fname> : insert the contents of a file named at the current line
+" :r! <cmd>   : insert the contents of a shell command at the current line
+
+" q:          : command history (press enter to exit or select command)
+" q/          : search history
+"
+" execute a vim command from the current buffer
+" ----------------------------------------
+" - copy the command and run :@"
+"
+" regexes
+" ----------------------------------------
+" replace patterns of form word1, word2 with word2, word1
+" %s/\(\w\+\),\(\s\+\)\?\(\w\+\)/\3, \1/gc
+
+" macros
+" ------
+"0A jj80a-Äkb jji//jj077lhdwj0
+":runtime ~/vÄkb.vim/indent /ÄkbÄkb/javascript.vim,eÄk6

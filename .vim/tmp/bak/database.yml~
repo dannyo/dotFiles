@@ -1,0 +1,39 @@
+development:
+  adapter: mysql2
+  encoding: utf8
+  database: shophers_development
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+
+test:
+  adapter: mysql2
+  encoding: utf8
+  database: shophers_test
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+
+qa:
+  adapter: mysql2
+  encoding: utf8
+  database: shophers_qa
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+
+staging:
+  adapter: mysql2
+  encoding: utf8
+  database: shophers_staging
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+
+production:
+  adapter: mysql2
+  encoding: utf8
+  database: shophers_production
+  username: root
+  password:
+  socket: /tmp/mysql.sock

@@ -1,0 +1,19 @@
+<?php
+
+require_once(__DIR__ . "/../vendor/autoload.php");
+
+use Tradesy\services\queue\rabbitmq\itemsync\Priority;
+
+ini_set("auto_detect_line_endings", true);
+
+$connection = \Tradesy\TMysql::connect()->db;
+
+
+$handle = fopen("mark_down_item.csv", "r");
+$firstRow = fgetcsv($handle, 5000, ",");
+while (false !== ($row = fgetcsv($handle, 5000))) {
+    $itemId = $row[2];
+    echo $itemId;
+    //\Tradesy\Item::syncItem($itemId, Priority::EDITORS_PICK_ITEM_SCORE_TABLE_UPDATE);
+}
+fclose($handle);

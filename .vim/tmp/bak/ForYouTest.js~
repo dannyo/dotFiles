@@ -1,0 +1,46 @@
+var supertest = require("supertest");
+var should = require("should");
+
+var server = supertest.agent("http://dev-php7.tradesy.com");
+
+describe("For You", function() {
+
+    it("should return for you item suggestions for a given user, brand, and category", function(done) {
+        var expectedText = '{"user_id":4238557,"brand":"prada","category":"bags","for_you":["10027948","13765165","13487575","12480676"]}';
+
+        server
+           .get("/users/4238557/foryou?brand=prada&category=bags")
+           .expect("Content-type",/json/)
+           .end(function(err,res) {
+                res.status.should.equal(200);
+                res.text.should.equal(expectedText);
+                done();
+            });
+    });
+
+    it("should return for you item suggestions for a given user, brand without a category", function(done) {
+        var expectedText = '{"user_id":923121,"brand":"seiko","category":"","for_you":["14295049"]}';
+
+            server
+               .get("/users/923121/foryou?brand=seiko")
+               .expect("Content-type",/json/)
+               .end(function(err,res) {
+                    res.status.should.equal(200);
+                    res.text.should.equal(expectedText);
+                    done();
+                });
+    });
+
+    it("should return 404 when brand is emply", function(done) {
+        var expectedText = '{"errors":[{"Invalid Parameters":"User Id and Brand values must be specified."}]}';
+
+            server
+               .get("/users/923121/foryou")
+               .expect("Content-type",/json/)
+               .end(function(err,res) {
+                    res.status.should.equal(400);
+                    res.text.should.equal(expectedText);
+                    done();
+                });
+    });
+});

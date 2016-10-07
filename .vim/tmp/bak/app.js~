@@ -1,0 +1,80 @@
+
+/**
+ * Module dependencies.
+ */
+
+var express = require('express');
+var logfmt = require("logfmt");
+var routes = require('./routes');
+var user = require('./routes/user');
+var http = require('http');
+var path = require('path');
+
+var app = express();
+var mongo = require('mongodb');
+var RecordProvider = require('./record-provider-memory').RecordProvider;
+
+// all environments
+app.set('port', process.env.PORT || 3000);
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.favicon());
+app.use(express.logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded());
+app.use(express.methodOverride());
+app.use(express.cookieParser('your secret here'));
+app.use(express.session());
+app.use(app.router);
+app.use(require('stylus').middleware(path.join(__dirname, 'public')));
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.set('mongoUri', process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/mydb');
+
+
+function cors() {
+    this.set('Access-Control-Allow-Origin', '*');
+}
+
+app.use(cors);
+
+mongo.connect(app.get('mongoUri'), function (err, db) {
+    db.collection('financeDocs', function(er, collection) {
+        //collection.insert({name: 'corn'}, {safe: true}, function(er,rs) {
+        //});
+    });
+});
+
+app.use(logfmt.requestLogger());
+// development only
+if ('development' == app.get('env')) {
+    app.use(express.errorHandler());
+}
+
+var recordProvider = new RecordProvider('localhost', 27017);
+
+app.get('/', function(req,res){
+    res.sendfile('./public/html/index.html');
+});
+app.get('/stats', function(req,res){
+    res.sendfile('./public/html/stats.html');
+});
+app.get('/records', function(req,res){
+    recordProvider.findAll(function(error,docs){
+        res.send(docs);
+    });
+});
+app.post('/record', function(req,res){
+    recordProvider.save(req.body, function(error, docs){
+        res.redirect('/');
+    });
+});
+app.delete('/record/:id', function(req,res){
+    recordProvider.delete(req.params.id, function(error, docs){
+        res.send(docs);
+    });
+});
+
+http.createServer(app).listen(app.get('port'), function(){
+    console.log('Express server listening on port ' + app.get('port'));
+});

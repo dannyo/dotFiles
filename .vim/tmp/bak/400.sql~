@@ -1,0 +1,26 @@
+CREATE TABLE gift_card (
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+`code` varchar(255) NOT NULL,
+`sender_id` int(10) NOT NULL,
+`recipient_email` varchar(255) NOT NULL,
+`redeemed_by_user_id` int(10),
+`purchased_amount` decimal(7,2) NOT NULL,
+`remaining_balance` decimal(7,2) NOT NULL,
+`status` varchar(255) NOT NULL,
+`created_at` varchar(255) NOT NULL,
+`redeemed_at` varchar(255),
+`updated_at` varchar(255)
+);
+
+CREATE TABLE gift_card_purchase_order (
+`id` int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+`gift_card_id` varchar(255) NOT NULL UNIQUE,
+`buyer_id` int(10) NOT NULL,
+`purchased_total` decimal(7,2) NOT NULL,
+`created_at` varchar(255) NOT NULL,
+`status` varchar(255) NOT NULL,
+`payment_type` varchar(255) NOT NULL,
+`credit_uri` varchar(255),
+`paypal_correlation_id` varchar(255),
+`paypal_transaction_id` varchar(255)
+);

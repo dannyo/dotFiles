@@ -1,0 +1,68 @@
+#Source is on the server
+SOURCE_PATH=/var/www/sites/dev
+
+# Stop Daemon
+sudo php ${SOURCE_PATH}/tradesy-cron/daemon/item_sync/daemon_cli.php stop
+
+# Reset database
+DB_USER=root
+DB_PASS=3NdrTek1
+DB_NAME=staging
+DB_HOST=localhost
+cd ${SOURCE_PATH}/tradesy-database/
+
+# Reset the database with test data
+mysql --user=${DB_USER} --password=${DB_PASS} -e "DROP DATABASE IF EXISTS ${DB_NAME}"
+mysql --user=${DB_USER} --password=${DB_PASS} -e "CREATE DATABASE ${DB_NAME}"
+php ./scripts/evolveDB.php bootstrap ${DB_USER} ${DB_PASS} ${DB_NAME} ${DB_HOST} test
+
+# Set the proper ownership
+sudo chown -R www-data:www-data ${SOURCE_PATH}/
+
+redis-cli -p 6379 FLUSHDB
+redis-cli -p 7000 FLUSHDB
+redis-cli -p 7001 FLUSHDB
+
+# Run Redis Data Load PHP Scripts
+cd ${SOURCE_PATH}/tradesy/protected/commands/shell/redis/ && sudo ./load_misc_redis_data.sh all
+
+# Run Redis Autocomplete PHP Scripts
+cd ${SOURCE_PATH}/tradesy/protected/commands/shell/redis/ && php autocompletefill.php
+
+# Delete indexes from ElasticSearch
+cd ${SOURCE_PATH}/tradesy/vendor/tradesy/common/src/Tradesy/ElasticSearch/script
+php escl.php delete-index tradesy
+php escl.php delete-index tradesy_user_index
+php escl.php delete-index tradesy_purchase_index
+php escl.php delete-index searchkeyword
+
+# Initialize indexes in ElasticSearch
+php escl.php initialize-index item
+php escl.php initialize-index user
+php escl.php initialize-index purchase
+php escl.php initialize-index searchkeyword
+
+# Configure Elasticsearch refresh interval
+curl -XPUT localhost:9200/_settings -d '{"index" : { "refresh_interval" : "-1" } }'
+
+# Load indexes in ElasticSearch
+php escl.php load-index purchase
+php escl.php load-index user
+php escl.php load-index inbox
+
+# Fraud elastic search
+sudo php ${SOURCE_PATH}/tradesy-fraud/script/fraudCLI.php build-all
+
+# Populate Elasticsearch
+cd ${SOURCE_PATH}/tradesy-common/ && sudo php src/Tradesy/ElasticSearch/Search/Term/scripts/populate/populateElasticSearch.php
+
+# Configure Elasticsearch refresh interval back to 1s
+curl -XPUT 127.0.0.1:9200/_settings -d '{"index" : { "refresh_interval" : "1s" } }'
+curl -XPOST 'http://localhost:9200/_optimize?max_num_segments=5'
+
+# Run Item Classifier
+sudo php ${SOURCE_PATH}/tradesy-common/src/Tradesy/ElasticSearch/Search/ItemClassifier/scripts/startWorkers.php
+
+# Start Daemon
+sudo php ${SOURCE_PATH}/tradesy-cron/daemon/item_sync/daemon_cli.php start
+sudo php ${SOURCE_PATH}/tradesy-cron/daemon/item_sync/daemon_cli.php fill-queue

@@ -1,0 +1,15 @@
+<?php
+require '/var/www/sites/dev/tradesy-core/tradesy-common/vendor/autoload.php';
+set_include_path( get_include_path() . PATH_SEPARATOR . __DIR__ . "/../src");
+echo get_include_path() . "\n";
+
+function myNamespaceAutoload( $path ) {
+    if ( preg_match( '/\\\\/', $path ) ) {
+        $path = str_replace('\\', DIRECTORY_SEPARATOR, $path );
+    }
+    if ( file_exists( "{$path}.php" ) ) {
+        require_once( "{$path}.php" );
+    }
+}
+
+spl_autoload_register( 'myNamespaceAutoload' );
