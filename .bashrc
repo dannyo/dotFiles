@@ -178,7 +178,6 @@ save (){
 }
 source ~/.dirs  # Initialization for the above 'save' facility: source the .sdirs file
 shopt -s cdable_vars # set the bash option so that no '$' is required when using the above facility
-source ~/.profile
 
 # --------------------------------------------------------------------------------
 # prompt: show git branch and status
