@@ -92,7 +92,7 @@ export LESS_TERMCAP_us=$'\E[01;32m' # begin underline
 
 [[ -s ~/nvm/nvm.sh ]] && source ~/nvm/nvm.sh
 
-# get aliases and functions
+# rbmh aliases and functions
 # --------------------------------------------------------------------------------
 if [[ -f ~/.bashrc_rbmh ]]; then
   . ~/.bashrc_rbmh
