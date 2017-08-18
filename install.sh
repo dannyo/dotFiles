@@ -6,6 +6,7 @@ cp $dir/.bashrc ~/.bashrc
 cp $dir/.gitconfig ~/.gitconfig
 cp $dir/.bash_profile ~/.bash_profile
 cp $dir/git-completion.bash ~/git-completion.bash
+cp $dir/.tmux.conf ~/.tmux.conf
 
 # create symlink for .ssh from Dropbox
 ln -sf ~/Dropbox/.ssh/ ~/.ssh
